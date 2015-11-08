@@ -1,0 +1,20 @@
+<?xml-version = "1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="Autoren.xsl"?>
+
+ 
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Configuration for SMTP-Client</comment>
+<entry key="port">465</entry>
+<!--<entry key="hostname">mailgate.informatik.haw-hamburg.de</entry>-->
+<entry key="hostname">smtp.strato.de</entry>
+<entry key="password">Aufgabe1</entry>
+<!--<entry key="mailAddress">rnp2015@informatik.haw-hamburg.de</entry>-->
+<entry key="mailAddress">rnp@hh320.de</entry>
+<!--<entry key="username">rnp2015</entry>-->
+<entry key="username">rnp@hh320.de</entry>
+<entry key="subject">Internet Protkolle</entry>
+<entry key="message">.Hallo, 
+.hier ist die Aufgabe im Anhang!</entry>
+</properties>
