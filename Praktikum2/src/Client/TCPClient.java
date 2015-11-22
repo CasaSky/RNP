@@ -16,6 +16,8 @@ import java.util.Scanner;
 public class TCPClient {
     /* Portnummer */
     private final int serverPort;
+    
+    private String username;
 
     /* Hostname */
     private final String hostname;
@@ -87,6 +89,11 @@ public class TCPClient {
         System.out.println("TCP Client got from Server: " + reply);
         return reply;
     }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
 
     public static void main(String[] args) {
         /* Test: Erzeuge Client und starte ihn. */
