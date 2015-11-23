@@ -12,12 +12,15 @@ package Client;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPClient {
-    /* Portnummer */
-    private final int serverPort;
     
     private String username;
+
+    /* Portnummer */
+    private final int serverPort;
 
     /* Hostname */
     private final String hostname;
@@ -34,7 +37,7 @@ public class TCPClient {
         this.hostname = hostname;
     }
 
-    public void startJob() {
+    public void startJob(String message) {
         /* Client starten. Ende, wenn quit eingegeben wurde */
         Scanner inFromUser;
         String sentence; // vom User uebergebener String
@@ -49,16 +52,7 @@ public class TCPClient {
             inFromServer = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
 
-            /* Konsolenstream (Standardeingabe) initialisieren */
-            inFromUser = new Scanner(System.in);
-
-            while (serviceRequested) {
-                System.out.println("ENTER TCP-DATA: ");
-                /* String vom Benutzer (Konsoleneingabe) holen */
-                sentence = inFromUser.nextLine();
-
-                /* String an den Server senden */
-                writeToServer(sentence);
+                writeToServer(message);
 
                 /* Modifizierten String vom Server empfangen */
                 modifiedSentence = readFromServer();
@@ -67,7 +61,7 @@ public class TCPClient {
                 if (modifiedSentence.startsWith("QUIT")) {
                     serviceRequested = false;
                 }
-            }
+            
 
             /* Socket-Streams schliessen --> Verbindungsabbau */
             clientSocket.close();
@@ -93,11 +87,9 @@ public class TCPClient {
     public void setUsername(String username) {
         this.username = username;
     }
-    
-
     public static void main(String[] args) {
         /* Test: Erzeuge Client und starte ihn. */
         TCPClient myClient = new TCPClient("localhost", 56789);
-        myClient.startJob();
+        myClient.startJob("");
     }
 }

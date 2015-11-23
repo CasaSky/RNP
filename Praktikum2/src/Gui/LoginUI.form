@@ -23,11 +23,6 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="112" max="-2" attributes="0"/>
-          </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -48,6 +43,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="150" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <Component id="joinButton" min="-2" pref="113" max="-2" attributes="0"/>
                   <Component id="connButton" min="-2" pref="109" max="-2" attributes="0"/>
               </Group>
@@ -104,11 +100,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Enter Server Name"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="serverTextFieldMouseClicked"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="portTextField">
       <Properties>
         <Property name="text" type="java.lang.String" value="Enter Port Number"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="portTextFieldMouseClicked"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
@@ -123,7 +125,6 @@
     <Component class="javax.swing.JButton" name="joinButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Chat beitreten!"/>
-        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="usernameTextField">

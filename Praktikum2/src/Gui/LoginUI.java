@@ -53,15 +53,24 @@ public class LoginUI extends javax.swing.JFrame {
         connButton.setText("Anmelden");
 
         serverTextField.setText("Enter Server Name");
+        serverTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                serverTextFieldMouseClicked(evt);
+            }
+        });
 
         portTextField.setText("Enter Port Number");
+        portTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                portTextFieldMouseClicked(evt);
+            }
+        });
 
         jLabel1.setText("Zum Server anmelden");
 
         jLabel2.setText("Username:");
 
         joinButton.setText("Chat beitreten!");
-        joinButton.setEnabled(false);
 
         usernameTextField.setText("Enter Username");
 
@@ -69,10 +78,6 @@ public class LoginUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(112, 112, 112))
             .addGroup(layout.createSequentialGroup()
                 .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -89,6 +94,7 @@ public class LoginUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(150, 150, 150)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
                     .addComponent(joinButton, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(connButton, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -119,6 +125,14 @@ public class LoginUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void serverTextFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverTextFieldMouseClicked
+        serverTextField.setText("");
+    }//GEN-LAST:event_serverTextFieldMouseClicked
+
+    private void portTextFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_portTextFieldMouseClicked
+        portTextField.setText("");
+    }//GEN-LAST:event_portTextFieldMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

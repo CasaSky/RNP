@@ -5,6 +5,10 @@
  */
 package Gui;
 
+import javax.swing.JButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 /**
  *
  * @author talal
@@ -33,9 +37,9 @@ public class ChatroomUI extends javax.swing.JFrame {
         sendMessage = new javax.swing.JButton();
         usersRefresh = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        usersArea = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        messageArea = new javax.swing.JTextArea();
 
         chatArea.setColumns(20);
         chatArea.setRows(5);
@@ -64,17 +68,17 @@ public class ChatroomUI extends javax.swing.JFrame {
 
         usersRefresh.setText("Aktualisieren");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("Users:\n");
-        jTextArea1.setEnabled(false);
-        jScrollPane3.setViewportView(jTextArea1);
+        usersArea.setColumns(20);
+        usersArea.setRows(5);
+        usersArea.setText("Users:\n");
+        usersArea.setEnabled(false);
+        jScrollPane3.setViewportView(usersArea);
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jTextArea2.setText("Message:");
-        jTextArea2.setEnabled(false);
-        jScrollPane2.setViewportView(jTextArea2);
+        messageArea.setColumns(20);
+        messageArea.setRows(5);
+        messageArea.setText("Message:");
+        messageArea.setEnabled(false);
+        jScrollPane2.setViewportView(messageArea);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -91,7 +95,6 @@ public class ChatroomUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -169,10 +172,41 @@ public class ChatroomUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JTextArea messageArea;
     private javax.swing.JTextField messageTextField;
     private javax.swing.JButton sendMessage;
+    private javax.swing.JTextArea usersArea;
     private javax.swing.JButton usersRefresh;
     // End of variables declaration//GEN-END:variables
+
+    public JTextArea getMessageArea() {
+        return messageArea;
+    }
+
+    public JTextField getMessageTextField() {
+        return messageTextField;
+    }
+
+    public JButton getSendMessage() {
+        return sendMessage;
+    }
+
+    public JTextArea getUsersArea() {
+        return usersArea;
+    }
+
+    public JButton getUsersRefresh() {
+        return usersRefresh;
+    }
+
+    public void setMessageArea(JTextArea messageArea) {
+        this.messageArea = messageArea;
+    }
+
+    public void setUsersArea(JTextArea usersArea) {
+        this.usersArea = usersArea;
+    }
+    
+    
+
 }

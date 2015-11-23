@@ -6,6 +6,7 @@
 package Controller;
 
 import Client.TCPClient;
+import Server.TCPServer;
 import Gui.ChatroomUI;
 import Gui.LoginUI;
 import java.awt.event.ActionEvent;
@@ -18,13 +19,41 @@ public class ControllerImpl implements I_Controller{
     LoginUI login;
     ChatroomUI chatroom;
     TCPClient client;
-    
+    TCPServer server;
+    Thread[] threads = new Thread[2];
+
 
     public ControllerImpl() {
-        login = new LoginUI();
-        recordEvents();
-        //chatroom = new ChatroomUI();
+     
+        // Work with threads, damit Server und GUI quasi-parallel laufen
+        //Server Thread
+        threads[0] = new Thread(new Runnable() {
+        public void run() {
+            // some code to run in parallel
+                server = new TCPServer(56789, 1);
+                server.startServer();
+        }
+        });
+        threads[0].start();
+  
+        // GUIS Thread
+        threads[1] = new Thread(new Runnable() {
+        public void run() {
+            // some code to run in parallel
+            login = new LoginUI();
+            chatroom = new ChatroomUI();
+            recordEvents();      
+        }
+        });
+        threads[1].start();
         
+//continue with work after dbThread is ready
+
+        //server = new TCPServer(56789, 1);
+        //server.startServer();
+        //login = new LoginUI();
+        //chatroom = new ChatroomUI();
+        //recordEvents();        
     }
     
     public void recordEvents() {
@@ -34,7 +63,8 @@ public class ControllerImpl implements I_Controller{
             public void actionPerformed(ActionEvent e) {
                 String hostname = login.getServerTextField().getText();
                 int port = Integer.parseInt(login.getPortTextField().getText());
-                connection(hostname, port);
+                if (connection(hostname, port)) 
+                    login.getJoinButton().setEnabled(true);
             }
         });
         
@@ -43,8 +73,19 @@ public class ControllerImpl implements I_Controller{
             public void actionPerformed(ActionEvent e) {
                 String username = login.getUsernameTextField().getText();
                 sendUsername(username);
+                chatroom.setVisible(true);
             }
         });
+        
+        chatroom.getSendMessage().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = chatroom.getMessageTextField().getText();
+                client.startJob(message);
+            }
+        });
+        
+        
         
     
     }
@@ -52,9 +93,16 @@ public class ControllerImpl implements I_Controller{
     
     @Override
     public boolean connection(String hostname, int port) {
-            boolean connected;
-            client = new TCPClient(hostname, port);
-            return true;
+        boolean connected=false;
+                    
+        // HIER SOll aber hostname und port aus dem Input genommen
+        client = new TCPClient("localhost", 56789); 
+ 
+        return connected;
+    }
+    
+    public void startJob(String message) {
+        client.startJob(message);
     }
 
     @Override

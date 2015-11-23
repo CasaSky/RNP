@@ -128,7 +128,6 @@ class TCPWorkerThread extends Thread {
       /* Lies die naechste Anfrage-Zeile (request) vom Client */
       String request = inFromClient.readLine();
       System.out.println("TCP Worker Thread " + name + " detected job: " + request);
-
       return request;
    }
 
