@@ -11,6 +11,9 @@ import Gui.ChatroomUI;
 import Gui.LoginUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author sasa
@@ -19,41 +22,14 @@ public class ControllerImpl implements I_Controller{
     LoginUI login;
     ChatroomUI chatroom;
     TCPClient client;
-    TCPServer server;
     Thread[] threads = new Thread[2];
 
 
     public ControllerImpl() {
-     
-        // Work with threads, damit Server und GUI quasi-parallel laufen
-        //Server Thread
-        threads[0] = new Thread(new Runnable() {
-        public void run() {
-            // some code to run in parallel
-                server = new TCPServer(56789, 1);
-                server.startServer();
-        }
-        });
-        threads[0].start();
-  
-        // GUIS Thread
-        threads[1] = new Thread(new Runnable() {
-        public void run() {
-            // some code to run in parallel
-            login = new LoginUI();
-            chatroom = new ChatroomUI();
-            recordEvents();      
-        }
-        });
-        threads[1].start();
-        
-//continue with work after dbThread is ready
-
-        //server = new TCPServer(56789, 1);
-        //server.startServer();
-        //login = new LoginUI();
-        //chatroom = new ChatroomUI();
-        //recordEvents();        
+    
+        login = new LoginUI();
+        chatroom = new ChatroomUI();
+        recordEvents();        
     }
     
     public void recordEvents() {
@@ -63,8 +39,11 @@ public class ControllerImpl implements I_Controller{
             public void actionPerformed(ActionEvent e) {
                 String hostname = login.getServerTextField().getText();
                 int port = Integer.parseInt(login.getPortTextField().getText());
-                if (connection(hostname, port)) 
-                    login.getJoinButton().setEnabled(true);
+                
+                //verbindungsaufbau
+                client = new TCPClient(hostname, port);
+                client.startJob();
+                 
             }
         });
         
@@ -81,30 +60,28 @@ public class ControllerImpl implements I_Controller{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = chatroom.getMessageTextField().getText();
-                client.startJob(message);
+                try {
+                    client.writeToServer(message);
+                } catch (IOException ex) {
+                    Logger.getLogger("write to Server"+ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });   
+        
+        chatroom.getRefreshButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                chatroom.getMessageArea().setText(client.readFromServer());
+                } catch (IOException ex) {
+                Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
             }
         });
         
-        
-        
-    
     }
 
-    
-    @Override
-    public boolean connection(String hostname, int port) {
-        boolean connected=false;
-                    
-        // HIER SOll aber hostname und port aus dem Input genommen
-        client = new TCPClient("localhost", 56789); 
- 
-        return connected;
-    }
-    
-    public void startJob(String message) {
-        client.startJob(message);
-    }
-
+   
     @Override
     public void sendMessage(String message) {
     }
@@ -124,9 +101,5 @@ public class ControllerImpl implements I_Controller{
     public String[] refresh() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
    
-    public static void main(String[] args) {
-        ControllerImpl controller = new ControllerImpl();
-    }
 }

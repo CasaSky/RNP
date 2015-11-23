@@ -102,7 +102,7 @@ class TCPWorkerThread extends Thread {
 
          while (workerServiceRequested) {
             /* String vom Client empfangen und in Grossbuchstaben umwandeln */
-            capitalizedSentence = readFromClient().toUpperCase();
+            capitalizedSentence = readFromClient();
 
             /* Modifizierten String an Client senden */
             writeToClient(capitalizedSentence);

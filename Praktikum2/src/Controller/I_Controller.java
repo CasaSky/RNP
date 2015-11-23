@@ -11,7 +11,7 @@ package Controller;
  */
 public interface I_Controller {
     
-   public boolean connection(String hostname, int port);
+   
    public void sendMessage(String message);
    public void sendUsername(String username);
    public String showMessage();

@@ -37,10 +37,9 @@ public class TCPClient {
         this.hostname = hostname;
     }
 
-    public void startJob(String message) {
+    public void startJob() {
         /* Client starten. Ende, wenn quit eingegeben wurde */
         Scanner inFromUser;
-        String sentence; // vom User uebergebener String
         String modifiedSentence; // vom Server modifizierter String
 
         try {
@@ -52,32 +51,33 @@ public class TCPClient {
             inFromServer = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
 
-                writeToServer(message);
-
+            //while (serviceRequested) {
+                //writeToServer(message);
+                
                 /* Modifizierten String vom Server empfangen */
-                modifiedSentence = readFromServer();
+                //modifiedSentence = readFromServer();
 
                 /* Test, ob Client beendet werden soll */
-                if (modifiedSentence.startsWith("QUIT")) {
-                    serviceRequested = false;
-                }
+//                if (modifiedSentence.startsWith("QUIT")) {
+//                    serviceRequested = false;
+//                }
+            //}
             
-
             /* Socket-Streams schliessen --> Verbindungsabbau */
-            clientSocket.close();
+//            clientSocket.close();
         } catch (IOException e) {
             System.err.println("Connection aborted by server!");
         }
         System.out.println("TCP Client stopped!");
     }
 
-    private void writeToServer(String request) throws IOException {
+    public void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
-        outToServer.writeBytes(request + '\r' + '\n');
+        outToServer.writeBytes(username + " >>> " + request + '\r' + '\n');
         System.out.println("TCP Client has sent the message: " + request);
     }
 
-    private String readFromServer() throws IOException {
+    public String readFromServer() throws IOException {
         /* Lies die Antwort (reply) vom Server */
         String reply = inFromServer.readLine();
         System.out.println("TCP Client got from Server: " + reply);
@@ -87,9 +87,9 @@ public class TCPClient {
     public void setUsername(String username) {
         this.username = username;
     }
-    public static void main(String[] args) {
-        /* Test: Erzeuge Client und starte ihn. */
-        TCPClient myClient = new TCPClient("localhost", 56789);
-        myClient.startJob("");
-    }
+//    public static void main(String[] args) {
+//        /* Test: Erzeuge Client und starte ihn. */
+//        TCPClient myClient = new TCPClient("localhost", 56789);
+//        myClient.startJob("");
+//    }
 }

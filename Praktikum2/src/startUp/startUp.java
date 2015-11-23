@@ -5,17 +5,19 @@
  */
 package startUp;
 
+import Controller.ControllerImpl;
+
 /**
  *
  * @author talal
  */
-public class Praktikum2 {
+public class startUp {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        ControllerImpl controller = new ControllerImpl();   
     }
     
 }
