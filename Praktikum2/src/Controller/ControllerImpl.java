@@ -72,7 +72,9 @@ public class ControllerImpl implements I_Controller{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                chatroom.getMessageArea().setText(client.readFromServer());
+                    String tmp = chatroom.getMessageArea().getText();
+                    
+                    chatroom.getMessageArea().setText(tmp+"\n"+client.readFromServer());
                 } catch (IOException ex) {
                 Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
