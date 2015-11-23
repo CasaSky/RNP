@@ -1,12 +1,7 @@
 package Client;
 /*
  * TCPClient.java
- *
- * Version 3.1
- * Autor: M. Huebner HAW Hamburg (nach Kurose/Ross)
- * Zweck: TCP-Client Beispielcode:
- *        TCP-Verbindung zum Server aufbauen, einen vom Benutzer eingegebenen
- *        String senden, den String in Grossbuchstaben empfangen und ausgeben
+ * Autor: sasa
  */
 
 import java.io.*;
@@ -17,8 +12,13 @@ import java.util.logging.Logger;
 
 public class TCPClient extends Thread{
     
+    private final String USERNAME="username";
+    private final String MESSAGE="message";
+    private final String STATUS="status";
+    private final String CLIENTS="clients";
+    
     private String username;
-
+ 
     /* Portnummer */
     private final int serverPort;
 
@@ -93,9 +93,4 @@ public class TCPClient extends Thread{
     public void setUsername(String username) {
         this.username = username;
     }
-//    public static void main(String[] args) {
-//        /* Test: Erzeuge Client und starte ihn. */
-//        TCPClient myClient = new TCPClient("localhost", 56789);
-//        myClient.startJob("");
-//    }
 }

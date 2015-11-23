@@ -1,6 +1,13 @@
-TCP_Client sendet einen String inform von (befehl+" "+ inhalt + '\r' + '\n')
-	befehl -> "username"
-	       -> "message"
+TCP_Client sendet einen String inform von ($befehl+" "+ $inhalt + '\r' + '\n')
+	$befehl -> "username"
+			$inhalt -> benutzername
+
+		-> "message"
+			$inhalt -> Nachricht
+
+		-> "clients"
+			$inhalt -> benutzername
+
 
 	" " -> trennt befehl und inhalt
 	
@@ -8,23 +15,32 @@ TCP_Client sendet einen String inform von (befehl+" "+ inhalt + '\r' + '\n')
 
 
 TCP_Client empfängt ein String und zerteilt das in befehl und inhalt
-	befehl = das erste wort bis zur erste Leertaste
-	inhalt = alles nach der erste Leertaste	
+	$befehl = das erste wort bis zur erste Leertaste
+	$inhalt = alles nach der erste Leertaste	
 	 
-	wenn befehl=="status"
+	wenn $befehl=="status"
 		->wenn inhalt=="110nok" -> Herstellen von username nicht möglich
 		->wenn inhalt=="110ok" -> Henerstellen von username möglich
 
-	wenn befehl=="message"
+	wenn $befehl=="message"
 		->inhalt an GUI weitergeben 
+
+	enn $befehl=="clients"
+		->der inhalt mit benutzername (mit leertaste getrennt) an GUI weitergegeben
 
 
 ___________________________________________________________________________________________________
 
-TCP_Server sendet einen String inform von (befehl+" "+inhalt+  '\r' + '\n')
-	befehl -> "status"
+TCP_Server sendet einen String inform von ($befehl+" "+$inhalt+  '\r' + '\n')
+	$befehl -> "status"
+			$inhalt -> statusmeldung
+
 	       -> "message"
+			$inhalt -> Nachricht
+
 	       -> "clints"
+			$inhalt -> $teilnehmerListe
+
 	
 	" " -> trennt befehl und inhalt
 	
@@ -35,13 +51,18 @@ TCP_Server empfängt ein String und zerteilt das in befehl und inhalt
 	befehl = das erste wort bis zur erste Leertaste
 	inhalt = alles nach der erste Leertaste		
 	
-	wenn befehl=="username"
+	wenn $befehl=="username"
 		->inhalt wird in Hashmap geprüft ob der value (benutzer) vorhanden ist oder nicht 
 			->fals ja -> statusmeldung an client ("110nok")
 			->nein -> wird in hashmap eingetragen und statusmeldung an client ("110ok") 
 	
-	wenn befehl=="message"
-		->wird an alle client Teilnehmer weitergeschickt inform (befehl("message") + " " + sender_username + " >> " + inhalt )
+	wenn $befehl=="message"
+		->wird an alle client Teilnehmer weitergeschickt inform (befehl("message") + " " + $sender_username + " >> " + $inhalt )
+
+	
+	wenn $befehl=="clients"
+		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die benutzernamen mit leertaste von einander gerennt sind.
+			und das in form (befehl("clients")+ " " +$inhalt+$teilnehmerliste)
   
 
 
