@@ -83,7 +83,6 @@ public class ControllerImpl implements I_Controller{
         
     }
 
-   
     @Override
     public void sendMessage(String message) {
     }
@@ -92,7 +91,6 @@ public class ControllerImpl implements I_Controller{
     public void sendUsername(String username) {
         client.setUsername(username);
     }
-    
 
     @Override
     public String showMessage() {
