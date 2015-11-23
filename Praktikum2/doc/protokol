@@ -24,6 +24,7 @@ ________________________________________________________________________________
 TCP_Server sendet einen String inform von (befehl+" "+inhalt+  '\r' + '\n')
 	befehl -> "status"
 	       -> "message"
+	       -> "clints"
 	
 	" " -> trennt befehl und inhalt
 	

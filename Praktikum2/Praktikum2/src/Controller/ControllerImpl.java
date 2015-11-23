@@ -22,7 +22,6 @@ public class ControllerImpl implements I_Controller{
     LoginUI login;
     ChatroomUI chatroom;
     TCPClient client;
-    Thread[] threads = new Thread[2];
 
 
     public ControllerImpl() {
@@ -42,8 +41,8 @@ public class ControllerImpl implements I_Controller{
                 
                 //verbindungsaufbau
                 client = new TCPClient(hostname, port);
-                client.startJob();
-                 
+                
+                client.run();
             }
         });
         
@@ -53,6 +52,7 @@ public class ControllerImpl implements I_Controller{
                 String username = login.getUsernameTextField().getText();
                 sendUsername(username);
                 chatroom.setVisible(true);
+                login.setVisible(false);
             }
         });
         

@@ -15,7 +15,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TCPClient {
+public class TCPClient extends Thread{
     
     private String username;
 
@@ -37,7 +37,8 @@ public class TCPClient {
         this.hostname = hostname;
     }
 
-    public void startJob() {
+    
+    public void run() {
         /* Client starten. Ende, wenn quit eingegeben wurde */
         Scanner inFromUser;
         String modifiedSentence; // vom Server modifizierter String
