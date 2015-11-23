@@ -1,0 +1,48 @@
+TCP_Client sendet einen String inform von (befehl+" "+ inhalt + '\r' + '\n')
+	befehl -> "username"
+	       -> "message"
+
+	" " -> trennt befehl und inhalt
+	
+	'\r' + '\n' -> ende der Nachtricht
+
+
+TCP_Client empfängt ein String und zerteilt das in befehl und inhalt
+	befehl = das erste wort bis zur erste Leertaste
+	inhalt = alles nach der erste Leertaste	
+	 
+	wenn befehl=="status"
+		->wenn inhalt=="110nok" -> Herstellen von username nicht möglich
+		->wenn inhalt=="110ok" -> Henerstellen von username möglich
+
+	wenn befehl=="message"
+		->inhalt an GUI weitergeben 
+
+
+___________________________________________________________________________________________________
+
+TCP_Server sendet einen String inform von (befehl+" "+inhalt+  '\r' + '\n')
+	befehl -> "status"
+	       -> "message"
+	
+	" " -> trennt befehl und inhalt
+	
+	'\r' + '\n' -> ende der Nachtricht
+
+
+TCP_Server empfängt ein String und zerteilt das in befehl und inhalt
+	befehl = das erste wort bis zur erste Leertaste
+	inhalt = alles nach der erste Leertaste		
+	
+	wenn befehl=="username"
+		->inhalt wird in Hashmap geprüft ob der value (benutzer) vorhanden ist oder nicht 
+			->fals ja -> statusmeldung an client ("110nok")
+			->nein -> wird in hashmap eingetragen und statusmeldung an client ("110ok") 
+	
+	wenn befehl=="message"
+		->wird an alle client Teilnehmer weitergeschickt inform (befehl("message") + " " + sender_username + " >> " + inhalt )
+  
+
+
+
+
