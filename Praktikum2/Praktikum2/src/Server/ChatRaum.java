@@ -16,7 +16,7 @@ public class ChatRaum {
     
     // Teilnehmer besteht aus Sitzung(Socket) und Username(String)
     private HashMap<Socket, String> teilnehmer;
-    
+
     public ChatRaum() {
         teilnehmer = new HashMap<>();
     }
@@ -38,4 +38,9 @@ public class ChatRaum {
             throw new NullPointerException("Username darf nicht null sein!");
         return result;
     }
+    
+    public HashMap<Socket, String> getTeilnehmer() {
+        return teilnehmer;
+    }
+    
 }

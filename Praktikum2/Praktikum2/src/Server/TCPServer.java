@@ -10,14 +10,17 @@ package Server;
  *        Maximale Anzahl Worker-Threads begrenzt durch Semaphore
  *  
  */
+import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
+import javax.imageio.IIOException;
 
 
 public class TCPServer {
    /* TCP-Server, der Verbindungsanfragen entgegennimmt */
-
+    
+   
    
     /* Semaphore begrenzt die Anzahl parallel laufender Worker-Threads  */
    public Semaphore workerThreadsSem;
@@ -76,6 +79,11 @@ class TCPWorkerThread extends Thread {
     * Arbeitsthread, der eine existierende Socket-Verbindung zur Bearbeitung
     * erhaelt
     */
+    
+    /*ChatRaum enthält die Hashmap Teilnehmer<Socket, String> wo die username und die Socket gespeichert werden können */
+    private ChatRaum chatraum;
+   /* Befehl Konstanten*/
+   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENT="client"; 
    private int name;
    private Socket socket;
    private TCPServer server;
@@ -85,6 +93,7 @@ class TCPWorkerThread extends Thread {
 
    public TCPWorkerThread(int num, Socket sock, TCPServer server) {
       /* Konstruktor */
+      chatraum = new ChatRaum();
       this.name = num;
       this.socket = sock;
       this.server = server;
@@ -103,6 +112,7 @@ class TCPWorkerThread extends Thread {
 
          while (workerServiceRequested) {
             /* String vom Client empfangen und in Grossbuchstaben umwandeln */
+            checkDataFromClient();
             capitalizedSentence = readFromClient();
 
             /* Modifizierten String an Client senden */
@@ -125,6 +135,29 @@ class TCPWorkerThread extends Thread {
       }
    }
 
+   // Prüft ob das gelieferte Data vom Client legal ist und ruft entsprechend die jeweiligen Funktionen für jeden Befehl
+   private void checkDataFromClient() throws IOException {
+       String data = readFromClient(); // liest data vom CLient
+       String befehl;
+       String inhalt;
+       String[] splittedData = data.split(" ", 2);
+
+        befehl = splittedData[0];
+        inhalt = splittedData[1];
+        switch (befehl) {
+            case USERNAME:  if (chatraum.usernameCheck(inhalt)) chatraum.addTeilnehmer(socket, inhalt);
+            break;
+            case MESSAGE: // message function(inhalt);
+            break;
+            case CLIENT: // client function(inhalt);
+            break;
+            default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
+            break;
+        }
+   }
+   
+   
+   
    private String readFromClient() throws IOException {
       /* Lies die naechste Anfrage-Zeile (request) vom Client */
       String request = inFromClient.readLine();
