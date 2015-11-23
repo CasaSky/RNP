@@ -64,13 +64,18 @@ public class TCPClient {
             //}
             
             /* Socket-Streams schliessen --> Verbindungsabbau */
-//            clientSocket.close();
+            //clientSocket.close();
         } catch (IOException e) {
             System.err.println("Connection aborted by server!");
         }
-        System.out.println("TCP Client stopped!");
+        //System.out.println("TCP Client stopped!");
     }
 
+    public void VerbindungStopp() throws IOException {
+        /* Socket-Streams schliessen --> Verbindungsabbau */
+            clientSocket.close();
+            System.out.println("TCP Client stopped!");
+    }
     public void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
         outToServer.writeBytes(username + " >>> " + request + '\r' + '\n');
