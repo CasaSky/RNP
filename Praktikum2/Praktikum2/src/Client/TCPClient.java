@@ -24,6 +24,7 @@ public class TCPClient extends Thread{
 
     /* Hostname */
     private final String hostname;
+    private String message;
 
     private Socket clientSocket; // TCP-Standard-Socketklasse
 
@@ -32,9 +33,11 @@ public class TCPClient extends Thread{
 
     private boolean serviceRequested = true; // Client beenden?
 
-    public TCPClient(String hostname, int serverPort) {
+    public TCPClient(String hostname, int serverPort,String username) {
         this.serverPort = serverPort;
         this.hostname = hostname;
+        this.username = username;
+        
     }
 
     
@@ -46,11 +49,29 @@ public class TCPClient extends Thread{
         try {
             /* Socket erzeugen --> Verbindungsaufbau mit dem Server */
             clientSocket = new Socket(hostname, serverPort);
-
+            
+            
             /* Socket-Basisstreams durch spezielle Streams filtern */
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
             inFromServer = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
+            
+            //sendet den Benutzernamen
+            System.err.println("vor username");
+            sendUsername();
+            System.err.println("nach username");
+            while(serviceRequested)
+            try{
+                System.err.println("bin drinee bei check");
+            checkDataFromServer();
+            }catch (IOException e) {
+                try {
+                    sleep(3000);
+                    } catch (InterruptedException e1) {
+                        serviceRequested = false;
+                    }
+            }
+            
 
             //while (serviceRequested) {
                 //writeToServer(message);
@@ -72,6 +93,28 @@ public class TCPClient extends Thread{
         //System.out.println("TCP Client stopped!");
     }
 
+    private void checkDataFromServer() throws IOException {
+       String data = readFromServer(); // liest data vom CLient
+       System.out.println("messag: " + data);
+       String befehl;
+       String inhalt;
+       String[] splittedData = data.split(" ", 2);
+
+        befehl = splittedData[0];
+        inhalt = splittedData[1];
+        switch (befehl) {
+            case STATUS:  
+            break;
+            case MESSAGE: this.message = inhalt;
+                System.err.println("messag: " + this.message);
+            break;
+            case CLIENTS: 
+            break;
+            default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
+            break;
+        }
+   }
+    
     public void VerbindungStopp() throws IOException {
         /* Socket-Streams schliessen --> Verbindungsabbau */
             clientSocket.close();
@@ -79,8 +122,8 @@ public class TCPClient extends Thread{
     }
     public void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
-        outToServer.writeBytes(username + " >>> " + request + '\r' + '\n');
-        System.out.println("TCP Client has sent the message: " + request);
+        outToServer.writeBytes(request + '\r' + '\n');
+        //System.out.println("TCP Client has sent the message: " + request);
     }
 
     public String readFromServer() throws IOException {
@@ -89,8 +132,28 @@ public class TCPClient extends Thread{
         System.out.println("TCP Client got from Server: " + reply);
         return reply;
     }
+    
+    public void sendMessage(String message)
+    {
+        try {
+            writeToServer(MESSAGE+ " " + username + " >> " + message);
+            System.out.println("TCP Client has sent the Message: "+ message);
+        } catch (IOException ex) {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void sendUsername() {
+        
+        try {
+            writeToServer(USERNAME+ " " +this.username);
+            System.out.println("TCP Client has sent the username: "+ this.username);
+        } catch (IOException ex) {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String getMessage() {
+        return this.message;
     }
 }

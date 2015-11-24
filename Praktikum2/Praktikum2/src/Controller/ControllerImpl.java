@@ -38,46 +38,31 @@ public class ControllerImpl implements I_Controller{
             public void actionPerformed(ActionEvent e) {
                 String hostname = login.getServerTextField().getText();
                 int port = Integer.parseInt(login.getPortTextField().getText());
-                
+                String username = login.getUsernameTextField().getText();
                 //verbindungsaufbau
-                client = new TCPClient(hostname, port);
-                
-                client.run();
-            }
+                client = new TCPClient(hostname, port, username);
+                client.start();
+                //sendUsername(username);
+                chatroom.setVisible(true);
+                login.setVisible(false);   
+            }                 
         });
         
-        login.getJoinButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = login.getUsernameTextField().getText();
-                sendUsername(username);
-                chatroom.setVisible(true);
-                login.setVisible(false);
-            }
-        });
+      
         
         chatroom.getSendMessage().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = chatroom.getMessageTextField().getText();
-                try {
-                    client.writeToServer(message);
-                } catch (IOException ex) {
-                    Logger.getLogger("write to Server"+ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                client.sendMessage(message);
             }
         });   
         
         chatroom.getRefreshButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    String tmp = chatroom.getMessageArea().getText();
-                    
-                    chatroom.getMessageArea().setText(tmp+"\n"+client.readFromServer());
-                } catch (IOException ex) {
-                Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                String tmp = chatroom.getMessageArea().getText();
+                chatroom.getMessageArea().setText(tmp+"\n"+client.getMessage());
             }
         });
         
@@ -85,11 +70,6 @@ public class ControllerImpl implements I_Controller{
 
     @Override
     public void sendMessage(String message) {
-    }
-
-    @Override
-    public void sendUsername(String username) {
-        client.setUsername(username);
     }
 
     @Override

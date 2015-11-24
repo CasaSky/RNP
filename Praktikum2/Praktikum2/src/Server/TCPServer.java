@@ -21,7 +21,8 @@ public class TCPServer {
    /* TCP-Server, der Verbindungsanfragen entgegennimmt */
     
    
-   
+   /*ChatRaum enthält die Hashmap Teilnehmer<Socket, String> wo die username und die Socket gespeichert werden können */
+   private static ChatRaum chatraum;
     /* Semaphore begrenzt die Anzahl parallel laufender Worker-Threads  */
    public Semaphore workerThreadsSem;
 
@@ -35,6 +36,7 @@ public class TCPServer {
    public TCPServer(int serverPort, int maxThreads) {
       this.serverPort = serverPort;
       this.workerThreadsSem = new Semaphore(maxThreads);
+      chatraum = new ChatRaum();
    }
 
    public void startServer() {
@@ -58,7 +60,7 @@ public class TCPServer {
             connectionSocket = welcomeSocket.accept();
 
             /* Neuen Arbeits-Thread erzeugen und die Nummer, den Socket sowie das Serverobjekt uebergeben */
-            (new TCPWorkerThread(++nextThreadNumber, connectionSocket, this)).start();
+            (new TCPWorkerThread(++nextThreadNumber, connectionSocket, this, chatraum)).start();
           }
       } catch (Exception e) {
          System.err.println(e.toString());
@@ -67,7 +69,7 @@ public class TCPServer {
 
    public static void main(String[] args) {
       /* Erzeuge Server und starte ihn */
-      TCPServer myServer = new TCPServer(56789, 1);
+      TCPServer myServer = new TCPServer(56789, 2);
       myServer.startServer();
    }
 }
@@ -79,9 +81,8 @@ class TCPWorkerThread extends Thread {
     * Arbeitsthread, der eine existierende Socket-Verbindung zur Bearbeitung
     * erhaelt
     */
-    
-    /*ChatRaum enthält die Hashmap Teilnehmer<Socket, String> wo die username und die Socket gespeichert werden können */
-    private ChatRaum chatraum;
+   private ChatRaum chatraum;
+
    /* Befehl Konstanten*/
    private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENT="clients"; 
    private final int name;
@@ -92,9 +93,9 @@ class TCPWorkerThread extends Thread {
    private DataOutputStream outToClients; // OutputStream für alle Clients
    boolean workerServiceRequested = true; // Arbeitsthread beenden?
 
-   public TCPWorkerThread(int num, Socket sock, TCPServer server) {
+   public TCPWorkerThread(int num, Socket sock, TCPServer server, ChatRaum chatraum) {
       /* Konstruktor */
-      chatraum = new ChatRaum();
+      this.chatraum = chatraum;
       this.name = num;
       this.socket = sock;
       this.server = server;

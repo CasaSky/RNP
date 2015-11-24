@@ -13,7 +13,6 @@ public interface I_Controller {
     
    
    public void sendMessage(String message);
-   public void sendUsername(String username);
    public String showMessage();
    public String[] refresh();
     
