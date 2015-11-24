@@ -6,7 +6,10 @@
 package Server;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  *
@@ -30,7 +33,6 @@ public class ChatRaum {
     
     // Prüft ob username nicht vorhanden ist
     public boolean usernameCheck(String username) {
-        
         boolean result;
         if (username != null)
             result = !teilnehmer.containsValue(username);
@@ -40,7 +42,19 @@ public class ChatRaum {
     }
     
     public HashMap<Socket, String> getTeilnehmer() {
+        if (teilnehmer==null)
+            throw new NullPointerException("Chat hat keine Teilnehmer!");
         return teilnehmer;
     }
     
+    public ArrayList<String> getAllUsernames() {
+        ArrayList<String> result = new ArrayList<>();
+        Collection<String> values = teilnehmer.values();
+        Iterator<String> it = values.iterator();
+        while (it.hasNext())
+            result.add(it.next());
+        if (result==null)
+            throw new NullPointerException("Username list ist im Chat nicht verfügbar!");
+        return result;
+    } 
 }

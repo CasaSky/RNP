@@ -10,12 +10,12 @@ package Server;
  *        Maximale Anzahl Worker-Threads begrenzt durch Semaphore
  *  
  */
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.*;
-import javax.imageio.IIOException;
-
 
 public class TCPServer {
    /* TCP-Server, der Verbindungsanfragen entgegennimmt */
@@ -83,12 +83,13 @@ class TCPWorkerThread extends Thread {
     /*ChatRaum enthält die Hashmap Teilnehmer<Socket, String> wo die username und die Socket gespeichert werden können */
     private ChatRaum chatraum;
    /* Befehl Konstanten*/
-   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENT="client"; 
-   private int name;
-   private Socket socket;
-   private TCPServer server;
+   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENT="clients"; 
+   private final int name;
+   private final Socket socket;
+   private final TCPServer server;
    private BufferedReader inFromClient;
    private DataOutputStream outToClient;
+   private DataOutputStream outToClients; // OutputStream für alle Clients
    boolean workerServiceRequested = true; // Arbeitsthread beenden?
 
    public TCPWorkerThread(int num, Socket sock, TCPServer server) {
@@ -100,7 +101,7 @@ class TCPWorkerThread extends Thread {
    }
 
    public void run() {
-      String capitalizedSentence;
+      //String capitalizedSentence;
 
       System.out.println("TCP Worker Thread " + name +
             " is running until QUIT is received!");
@@ -111,17 +112,15 @@ class TCPWorkerThread extends Thread {
          outToClient = new DataOutputStream(socket.getOutputStream());
 
          while (workerServiceRequested) {
-            /* String vom Client empfangen und in Grossbuchstaben umwandeln */
+            /* prüft eingehende Data vom Client und erledigt die Anforderung */
             checkDataFromClient();
-            capitalizedSentence = readFromClient();
-
-            /* Modifizierten String an Client senden */
-            writeToClient(capitalizedSentence);
 
             /* Test, ob Arbeitsthread beendet werden soll */
-            if (capitalizedSentence.startsWith("QUIT")) {
+             // TODO:
+            /* Hier soll ein Status Code abgefangen werden der das beendet indetifiziert */
+            /* if (capitalizedSentence.startsWith("QUIT")) {
                workerServiceRequested = false;
-            }
+            }*/
          }
 
          /* Socket-Streams schliessen --> Verbindungsabbau */
@@ -147,16 +146,36 @@ class TCPWorkerThread extends Thread {
         switch (befehl) {
             case USERNAME:  if (chatraum.usernameCheck(inhalt)) chatraum.addTeilnehmer(socket, inhalt);
             break;
-            case MESSAGE: // message function(inhalt);
+            case MESSAGE: sendMessagetoClients(inhalt);
             break;
-            case CLIENT: // client function(inhalt);
+            case CLIENT: sendChatroomUsers();
             break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
         }
    }
    
+   // leitet die erhaltene Nachricht vom Client an allen Clients weiter
+   private void sendMessagetoClients(String inhalt) throws IOException {
+       
+       Collection<Socket> keys = chatraum.getTeilnehmer().keySet();
+       Iterator<Socket> it = keys.iterator();
+       while (it.hasNext()) {
+            outToClients = new DataOutputStream(it.next().getOutputStream());
+            writeToClients(MESSAGE+" "+inhalt);
+       }
+   }
    
+   // der Client der nach Users abfragt bekommt das Ergebniss
+   private void sendChatroomUsers() throws IOException {
+       String messageToSend = CLIENT;
+       ArrayList<String> users = chatraum.getAllUsernames();
+       
+       for (String username : users) {
+           messageToSend += " "+username;
+       }
+        writeToClient(messageToSend);  
+   }
    
    private String readFromClient() throws IOException {
       /* Lies die naechste Anfrage-Zeile (request) vom Client */
@@ -168,6 +187,14 @@ class TCPWorkerThread extends Thread {
    private void writeToClient(String reply) throws IOException {
       /* Sende den String als Antwortzeile (mit CRLF) zum Client */
       outToClient.writeBytes(reply + '\r' + '\n');
+      System.out.println("TCP Worker Thread " + name +
+            " has written the message: " + reply);
+   }
+   
+   // write über den OutputStream der für alle Clients gedacht ist
+    private void writeToClients(String reply) throws IOException {
+      /* Sende den String als Antwortzeile (mit CRLF) zum Client */
+      outToClients.writeBytes(reply + '\r' + '\n');
       System.out.println("TCP Worker Thread " + name +
             " has written the message: " + reply);
    }
