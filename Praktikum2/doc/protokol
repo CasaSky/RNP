@@ -9,6 +9,9 @@ TCP_Client sendet einen String in form von ($Befehl+" "+ $Inhalt + '\r' + '\n')
 
 		-> "clients"
 			$Inhalt -> Benutzername
+	
+		-> "logout"
+			$Inhalt -> Benutzername
 
 
 	" " -> trennt Befehl und Inhalt
@@ -70,6 +73,9 @@ TCP_Server empfängt ein String und zerteilt das in $Befehl und $Inhalt
 	wenn $Befehl=="clients"
 		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die Benutzernamen mit Leertaste von einander getrennt sind. 
 		Und das in form ("clients"($Befehl)+ " " +$Inhalt+$Teilnehmerliste)
+
+	wenn $Befehl=="logout"
+		->Der Client wird aus der liste der Teilnehmer entfernt und Server bemerkt das der Client sich verabschiedet hat.(z.B.:quit)
   
 
 
