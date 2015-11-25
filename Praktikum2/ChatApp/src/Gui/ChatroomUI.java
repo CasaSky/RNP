@@ -78,12 +78,14 @@ public class ChatroomUI extends javax.swing.JFrame {
         usersArea.setColumns(20);
         usersArea.setRows(5);
         usersArea.setText("Users:\n");
+        usersArea.setDisabledTextColor(new java.awt.Color(127, 2, 2));
         usersArea.setEnabled(false);
         jScrollPane3.setViewportView(usersArea);
 
         messageArea.setColumns(20);
         messageArea.setRows(5);
         messageArea.setText("Message:");
+        messageArea.setDisabledTextColor(new java.awt.Color(2, 106, 2));
         messageArea.setEnabled(false);
         jScrollPane2.setViewportView(messageArea);
 

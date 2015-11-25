@@ -9,6 +9,7 @@ import Client.TCPClient;
 import Gui.ChatroomUI;
 import Gui.LoginUI;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 //import java.awt.event.ActionListener;
@@ -76,6 +77,15 @@ public class ControllerImpl implements I_Controller{
             };
             workThread.start();
         });  
+        
+        
+        chatroomUI.getUsersRefresh().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            client.sendClients();
+            chatroomUI.getUsersArea().setText(client.getChatroomUser());
+            }
+        });
         
         chatroomUI.getMessageTextField().addKeyListener(new KeyListener() {
             @Override
