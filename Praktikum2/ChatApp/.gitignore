@@ -25,8 +25,8 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 
-
-
+/build/
+Praktikum2/ChatApp/build/
 
 
 /Praktikum2/Praktikum2/build/

@@ -20,6 +20,9 @@ public class TCPClient extends Thread{
 
     private boolean messageReceived=false;
     private String username;
+    
+    //
+    private String chatroomUser;
  
     /* Portnummer */
     private final int serverPort;
@@ -58,6 +61,10 @@ public class TCPClient extends Thread{
             
             //sendet den Benutzernamen
             sendUsername();
+            
+            //sende eine client teilnehmer anfrage
+//            sendClients();
+            
             while(serviceRequested) //{
             try{
                 checkDataFromServer();
@@ -91,7 +98,6 @@ public class TCPClient extends Thread{
 
     private synchronized void checkDataFromServer() throws IOException {
        String data = readFromServer(); // liest data vom CLient
-       System.out.println("messag: " + data);
        String befehl;
        String inhalt;
        String[] splittedData = data.split(" ", 2);
@@ -105,15 +111,16 @@ public class TCPClient extends Thread{
                 this.message = inhalt;
                 ready = true;
                 this.notifyAll();
-       {
-           try {
-               sleep(3000);
-           } catch (InterruptedException ex) {
-               Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
-           }
-       }
+//            {
+                try {
+                    sleep(3000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+//            }
             break;
             case CLIENTS: 
+                chatroomUser(inhalt);
             break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
@@ -151,6 +158,17 @@ public class TCPClient extends Thread{
         try {
             writeToServer(USERNAME+ " " +this.username);
             System.out.println("TCP Client has sent the username: "+ this.username);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void sendClients(){
+        try {
+            writeToServer(CLIENTS+ " " +this.username);
+            System.out.println("TCP Client has sent the chatroom Clients and "+ this.username);
+                     
         } catch (IOException ex) {
             Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -174,5 +192,13 @@ public class TCPClient extends Thread{
 
     public boolean isReady() {
         return ready;
+    }
+
+    public String getChatroomUser() {
+        return chatroomUser;
+    }
+
+    private void chatroomUser(String inhalt) {
+        chatroomUser = inhalt.replaceAll(" ", "\n");        
     }
 }

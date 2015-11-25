@@ -1,70 +1,76 @@
-TCP_Client sendet einen String inform von ($befehl+" "+ $inhalt + '\r' + '\n')
-	$befehl -> "username"
-			$inhalt -> benutzername
+TCP-Client
+
+TCP_Client sendet einen String in form von ($Befehl+" "+ $Inhalt + '\r' + '\n')
+	$Befehl -> "username"
+			$Inhalt -> Benutzername
 
 		-> "message"
-			$inhalt -> Nachricht
+			$Inhalt -> Nachricht
 
 		-> "clients"
-			$inhalt -> benutzername
+			$Inhalt -> Benutzername
 
 
-	" " -> trennt befehl und inhalt
+	" " -> trennt Befehl und Inhalt
 	
-	'\r' + '\n' -> ende der Nachtricht
+	'\r' + '\n' -> ende der Nachricht
 
 
-TCP_Client empfängt ein String und zerteilt das in befehl und inhalt
-	$befehl = das erste wort bis zur erste Leertaste
-	$inhalt = alles nach der erste Leertaste	
+TCP_Client empfängt ein String und zerteilt das in $Befehl und $Inhalt
+	$Befehl = das erste Wort bis zur erste Leertaste
+	$Inhalt = alles nach der erste Leertaste	
 	 
-	wenn $befehl=="status"
-		->wenn inhalt=="110nok" -> Herstellen von username nicht möglich
-		->wenn inhalt=="110ok" -> Henerstellen von username möglich
+	wenn $Befehl=="status"
+		->wenn $Inhalt=="110nok" -> Herstellen von username nicht möglich
+		->wenn $Inhalt=="110ok" -> Herstellen von username möglich
 
-	wenn $befehl=="message"
+	wenn $Befehl=="message"
 		->inhalt an GUI weitergeben 
 
-	enn $befehl=="clients"
-		->der inhalt mit benutzername (mit leertaste getrennt) an GUI weitergegeben
+	enn $Befehl=="clients"
+		->der $Inhalt mit Benutzernamen (mit Leertaste getrennt) an GUI weitergegeben
 
 
 ___________________________________________________________________________________________________
+TCP-Server
 
-TCP_Server sendet einen String inform von ($befehl+" "+$inhalt+  '\r' + '\n')
+Server: localhost
+Port: 56789
+
+
+TCP_Server sendet einen String inform von ($Befehl+" "+$Inhalt+  '\r' + '\n')
 	$befehl -> "status"
-			$inhalt -> statusmeldung
+			$Inhalt -> Statusmeldung
 
 	       -> "message"
-			$inhalt -> Nachricht
+			$Inhalt -> Nachricht
 
 	       -> "clints"
-			$inhalt -> $teilnehmerListe
+			$Inhalt -> $Teilnehmerliste
 
 	
-	" " -> trennt befehl und inhalt
+	" " -> trennt $Befehl und $Inhalt
 	
-	'\r' + '\n' -> ende der Nachtricht
+	'\r' + '\n' -> ende der Nachricht
 
 
-TCP_Server empfängt ein String und zerteilt das in befehl und inhalt
-	befehl = das erste wort bis zur erste Leertaste
-	inhalt = alles nach der erste Leertaste		
+TCP_Server empfängt ein String und zerteilt das in $Befehl und $Inhalt
+	$Befehl = das erste Wort bis zur erste Leertaste
+	$Inhalt = alles nach der erste Leertaste		
 	
-	wenn $befehl=="username"
-		->inhalt wird in Hashmap geprüft ob der value (benutzer) vorhanden ist oder nicht 
-			->fals ja -> statusmeldung an client ("110nok")
-			->nein -> wird in hashmap eingetragen und statusmeldung an client ("110ok") 
+	wenn $Befehl=="username"
+		->Inhalt wird in Hashmap geprüft ob der value (Benutzer) vorhanden ist oder nicht 
+			->falls ja -> Statusmeldung an Client ("110nok")
+			->nein -> wird in hashmap eingetragen und Statusmeldung an Client("110ok") 
 	
-	wenn $befehl=="message"
-		->wird an alle client Teilnehmer weitergeschickt inform (befehl("message") + " " + $sender_username + " >> " + $inhalt )
+	wenn $Befehl=="message"
+		->wird an alle Client Teilnehmer weiter geschickt in form ("message"($Befehl) + " " + $sender_username + " >> " + $inhalt )
 
 	
-	wenn $befehl=="clients"
-		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die benutzernamen mit leertaste von einander gerennt sind.
-			und das in form (befehl("clients")+ " " +$inhalt+$teilnehmerliste)
+	wenn $Befehl=="clients"
+		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die Benutzernamen mit Leertaste von einander getrennt sind. 
+		Und das in form ("clients"($Befehl)+ " " +$Inhalt+$Teilnehmerliste)
   
-
 
 
 

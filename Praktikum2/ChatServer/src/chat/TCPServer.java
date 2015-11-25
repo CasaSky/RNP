@@ -84,7 +84,7 @@ class TCPWorkerThread extends Thread {
    private ChatRaum chatraum;
 
    /* Befehl Konstanten*/
-   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENT="clients"; 
+   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENTS="clients"; 
    private final int name;
    private final Socket socket;
    private final TCPServer server;
@@ -99,6 +99,7 @@ class TCPWorkerThread extends Thread {
       this.name = num;
       this.socket = sock;
       this.server = server;
+      
    }
 
    public void run() {
@@ -111,7 +112,7 @@ class TCPWorkerThread extends Thread {
          /* Socket-Basisstreams durch spezielle Streams filtern */
          inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          outToClient = new DataOutputStream(socket.getOutputStream());
-
+//         outToClients = outToClient;
          while (workerServiceRequested) {
             /* prüft eingehende Data vom Client und erledigt die Anforderung */
             checkDataFromClient();
@@ -145,11 +146,15 @@ class TCPWorkerThread extends Thread {
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
-            case USERNAME:  if (chatraum.usernameCheck(inhalt)) chatraum.addTeilnehmer(socket, inhalt);
+            case USERNAME:  
+                if (chatraum.usernameCheck(inhalt)){
+                    chatraum.addTeilnehmer(socket, inhalt);
+                    sendChatroomUsers();
+                }
             break;
             case MESSAGE: sendMessagetoClients(inhalt);
             break;
-            case CLIENT: sendChatroomUsers();
+            case CLIENTS: sendChatroomUsers();
             break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
@@ -169,7 +174,7 @@ class TCPWorkerThread extends Thread {
    
    // der Client der nach Users abfragt bekommt das Ergebniss
    private void sendChatroomUsers() throws IOException {
-       String messageToSend = CLIENT;
+       String messageToSend = CLIENTS;
        ArrayList<String> users = chatraum.getAllUsernames();
        
        for (String username : users) {

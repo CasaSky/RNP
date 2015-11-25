@@ -17,8 +17,7 @@ public class startUp {
      * @param args the command linue arguments
      */
     public static void main(String[] args) {
-        ControllerImpl controller = new ControllerImpl();   
-        ControllerImpl controller2 = new ControllerImpl();  
+        ControllerImpl controller = new ControllerImpl(); 
     }
     
 }
