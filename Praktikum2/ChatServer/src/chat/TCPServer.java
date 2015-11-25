@@ -102,7 +102,6 @@ class TCPWorkerThread extends Thread {
    }
 
    public void run() {
-      //String capitalizedSentence;
 
       System.out.println("TCP Worker Thread " + name +
             " is running until QUIT is received!");
@@ -112,16 +111,11 @@ class TCPWorkerThread extends Thread {
          inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          outToClient = new DataOutputStream(socket.getOutputStream());
 //         outToClients = outToClient;
+        
+        // Socket bleibt offen -> checkDataFromClient wird solange aufgerufen werden, bis workerServiceRequested = false -> das heißt der Benutzer möchte sich abmelden -> Danach wird Socket geschloßen 
          while (workerServiceRequested) {
             /* prüft eingehende Data vom Client und erledigt die Anforderung */
             checkDataFromClient();
-
-            /* Test, ob Arbeitsthread beendet werden soll */
-             // TODO:
-            /* Hier soll ein Status Code abgefangen werden der das beendet indetifiziert */
-            /* if (capitalizedSentence.startsWith("QUIT")) {
-               workerServiceRequested = false;
-            }*/
          }
 
          /* Socket-Streams schliessen --> Verbindungsabbau */
@@ -135,7 +129,7 @@ class TCPWorkerThread extends Thread {
       }
    }
 
-   // Prüft ob das gelieferte Data vom Client legal ist und ruft entsprechend die jeweiligen Funktionen für jeden Befehl
+   // Prüft ob das gelieferte Data vom Client legal ist und ruft entsprechend die jeweiligen Funktionen für jeden Befehl auf
    private void checkDataFromClient() throws IOException {
        String data = readFromClient(); // liest data vom CLient
        String befehl;

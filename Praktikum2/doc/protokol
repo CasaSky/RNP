@@ -81,8 +81,16 @@ TCP_Server empfängt ein String und zerteilt das in $Befehl und $Inhalt
 		Und das in form ("clients"($Befehl)+ " " +$Inhalt+$Teilnehmerliste)
 
 	wenn $Befehl=="logout"
-		->Der Client wird aus der liste der Teilnehmer entfernt und Server bemerkt das der Client sich verabschiedet hat.(z.B.:quit)
+ 		->Der Client wird aus der liste der Teilnehmer entfernt und Server bemerkt das der Client sich verabschiedet hat.(z.B.:quit)
   
 
+Controller 	- TCPClient Thread -> damit er ungestört, die gesendeten DATA vom Server bearbeiten kann.
+		- listenThread -> der quasi-paralell mit den Controller und den workThread läuft -> Wenn sich ein User verbindet, soll der listenThread solange laufen, bis ein logout Befehl ausgeführt wird (Fals eine Nachricht 			aufgefasst wurde, während er noch läuft, wird sie in der UI angezeigt.)
+		- workThread -> wird erzeugt, wenn der SendeButton gedrückt ist. Dieser Thread führt die Methode des Senden vom Client aus.
 
 
+Zeichen Codierung: UTF-8
+Fehlermeldung : Siehe Code - Beim senden eines unbekannten Befehls -> Exception Befehl wurde nicht erkannt! 
+Ports: 
+	besetzte Ports: netstat -ano 
+	alle ports von 1 bis 65536 , die unter lokale adresse nicht auftauchen , sind nicht belegt
