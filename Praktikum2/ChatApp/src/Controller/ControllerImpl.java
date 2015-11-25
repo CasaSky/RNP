@@ -12,9 +12,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 //import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 /**
  *
  * @author sasa
@@ -25,7 +28,7 @@ public class ControllerImpl implements I_Controller{
     TCPClient client;
     Thread listenThread; // lesen
     Thread workThread; // schreiben
-
+    String username;
 
     public ControllerImpl() {
         login = new LoginUI();
@@ -33,12 +36,12 @@ public class ControllerImpl implements I_Controller{
         recordEvents();        
     }
     
-    public final void recordEvents() {
+    public void recordEvents() {
        
         login.getConnButton().addActionListener((ActionEvent e) -> {
             String hostname = login.getServerTextField().getText();
             int port = Integer.parseInt(login.getPortTextField().getText());
-            String username = login.getUsernameTextField().getText();
+            username = login.getUsernameTextField().getText();
             //verbindungsaufbau
             client = new TCPClient(hostname, port, username);
             client.start();
@@ -48,21 +51,23 @@ public class ControllerImpl implements I_Controller{
             {
                 @Override
                 public void run() {
-                    while (true) {
-                        while (!client.isReady()) {
+                    //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
+                    while (!client.logoutOk()) {
+                        while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(2000);
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
-                        String tmp = chatroomUI.getMessageArea().getText();
-                        chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
-                        client.setReady(false);
+                            String tmp = chatroomUI.getMessageArea().getText();
+                            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
+                            client.setReady(false);
                     }
+                            chatroomUI.dispose();
                 }
             };
-            listenThread.start();                 
+            listenThread.start(); 
         });
         
         chatroomUI.getSendButton().addActionListener((ActionEvent e) -> {
@@ -98,6 +103,23 @@ public class ControllerImpl implements I_Controller{
                     chatroomUI.getSendButton().doClick();
             }
         });
+        
+        chatroomUI.getLogoutButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                client.sendLogout(username); 
+            }
+        });
+        
+        chatroomUI.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                System.out.println("Closed");
+                client.sendLogout(username); 
+            }        
+        });
+
     }
 
     @Override

@@ -84,7 +84,7 @@ class TCPWorkerThread extends Thread {
    private ChatRaum chatraum;
 
    /* Befehl Konstanten*/
-   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENTS="clients"; 
+   private final String MESSAGE="message", USERNAME="username", STATUS="status", CLIENTS="clients", LOGOUT="logout"; 
    private final int name;
    private final Socket socket;
    private final TCPServer server;
@@ -99,7 +99,6 @@ class TCPWorkerThread extends Thread {
       this.name = num;
       this.socket = sock;
       this.server = server;
-      
    }
 
    public void run() {
@@ -156,6 +155,8 @@ class TCPWorkerThread extends Thread {
             break;
             case CLIENTS: sendChatroomUsers();
             break;
+            case LOGOUT: chatraum.deleteTeilnehmer(socket); sendLogoutOK(inhalt);
+            break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
         }
@@ -204,4 +205,12 @@ class TCPWorkerThread extends Thread {
       System.out.println("TCP Worker Thread " + name +
             " has written the message: " + reply);
    }
+
+    private void sendLogoutOK(String inhalt) throws IOException {
+        String logOutReply = LOGOUT+" "+inhalt;
+        writeToClient(logOutReply);
+        System.out.println("TCP Worker Thread " + name +
+            " has written the message: " + logOutReply);
+        workerServiceRequested = false;
+    }
 }

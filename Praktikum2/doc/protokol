@@ -30,8 +30,11 @@ TCP_Client empfängt ein String und zerteilt das in $Befehl und $Inhalt
 	wenn $Befehl=="message"
 		->inhalt an GUI weitergeben 
 
-	enn $Befehl=="clients"
+	wenn $Befehl=="clients"
 		->der $Inhalt mit Benutzernamen (mit Leertaste getrennt) an GUI weitergegeben
+
+	wenn $Befehl=="logout"
+		->logout() - true an Controller weitergeben
 
 
 ___________________________________________________________________________________________________
@@ -48,8 +51,11 @@ TCP_Server sendet einen String inform von ($Befehl+" "+$Inhalt+  '\r' + '\n')
 	       -> "message"
 			$Inhalt -> Nachricht
 
-	       -> "clints"
+	       -> "clients"
 			$Inhalt -> $Teilnehmerliste
+		
+		-> "logout"
+			$Inhalt -> $Username und schließt die Socket mit dem Client
 
 	
 	" " -> trennt $Befehl und $Inhalt

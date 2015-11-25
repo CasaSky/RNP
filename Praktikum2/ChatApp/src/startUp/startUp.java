@@ -18,6 +18,7 @@ public class startUp {
      */
     public static void main(String[] args) {
         ControllerImpl controller = new ControllerImpl(); 
+        //ControllerImpl controller2 = new ControllerImpl(); 
     }
     
 }

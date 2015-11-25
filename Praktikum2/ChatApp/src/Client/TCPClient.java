@@ -15,8 +15,11 @@ public class TCPClient extends Thread{
     private final String MESSAGE="message";
     private final String STATUS="status";
     private final String CLIENTS="clients";
+    private final String LOGOUT="logout";
     
     private boolean ready = false;
+    
+    private boolean logout = false;
 
     private boolean messageReceived=false;
     private String username;
@@ -65,35 +68,22 @@ public class TCPClient extends Thread{
             //sende eine client teilnehmer anfrage
 //            sendClients();
             
-            while(serviceRequested) //{
+            while(serviceRequested) {
             try{
                 checkDataFromServer();
             }catch (IOException e) {
                 try {
                     sleep(3000);
                     } catch (InterruptedException e1) {
-                        serviceRequested = false;
                     }
             }
-            //}
-            //while (serviceRequested) {
-                //writeToServer(message);
-                
-                /* Modifizierten String vom Server empfangen */
-                //modifiedSentence = readFromServer();
-
-                /* Test, ob Client beendet werden soll */
-//                if (modifiedSentence.startsWith("QUIT")) {
-//                    serviceRequested = false;
-//                }
-            //}
-            
+            }
             /* Socket-Streams schliessen --> Verbindungsabbau */
-            //clientSocket.close();
+            clientSocket.close();
         } catch (IOException e) {
             System.err.println("Connection aborted by server!");
         }
-        //System.out.println("TCP Client stopped!");
+        System.out.println("TCP Client stopped!");
     }
 
     private synchronized void checkDataFromServer() throws IOException {
@@ -122,16 +112,25 @@ public class TCPClient extends Thread{
             case CLIENTS: 
                 chatroomUser(inhalt);
             break;
+            case LOGOUT:
+                serviceRequested = false;
+                ready=true;
+                logout=true;
+                System.err.println("JO ich führe das aus");
+                this.notifyAll();
+                
+                try {
+                    sleep(3000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
         }
    }
-    
-    private void VerbindungStopp() throws IOException {
-        /* Socket-Streams schliessen --> Verbindungsabbau */
-            clientSocket.close();
-            System.out.println("TCP Client stopped!");
-    }
+
     private void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
         outToServer.writeBytes(request + '\r' + '\n');
@@ -162,6 +161,20 @@ public class TCPClient extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void sendLogout(String username) {
+        try {
+            writeToServer(LOGOUT+" "+username);
+            System.out.println("TCP Client has sent a logout command for: "+ this.username);
+        } catch (IOException ex) {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    public boolean logoutOk() {
+        return logout;
     }
     
     public void sendClients(){
@@ -201,4 +214,5 @@ public class TCPClient extends Thread{
     private void chatroomUser(String inhalt) {
         chatroomUser = inhalt.replaceAll(" ", "\n");        
     }
+
 }

@@ -5,7 +5,7 @@
         <group>
             <file>file:/home/talal/github/RNP/Praktikum2/ChatApp/src/Controller/ControllerImpl.java</file>
             <file>file:/home/talal/github/RNP/Praktikum2/ChatApp/src/startUp/startUp.java</file>
-            <file>file:/home/talal/github/RNP/Praktikum2/ChatApp/src/Gui/ChatroomUI.java</file>
+            <file>file:/home/talal/github/RNP/Praktikum2/ChatApp/src/Client/TCPClient.java</file>
         </group>
     </open-files>
 </project-private>

@@ -31,6 +31,11 @@ public class ChatRaum {
         else throw new NullPointerException("Socket oder username darf nicht null sein!");
     }
     
+    //löscht den Teilnehmer aus der Liste vom Chatraum
+    public void deleteTeilnehmer(Socket socket) {
+        teilnehmer.remove(socket);
+    }
+    
     // Prüft ob username nicht vorhanden ist
     public boolean usernameCheck(String username) {
         boolean result;
