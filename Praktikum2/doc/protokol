@@ -1,31 +1,39 @@
 TCP-Client
 
-TCP_Client sendet einen String in form von ($Befehl+" "+ $Inhalt + '\r' + '\n')
+Server: localhost
+Port: 56789
+
+Zeichen Codierung: UTF-8
+
+leertaste - leerzeichen
+inhalt -> Argument
+
+TCP_Client sendet einen String in form von ($Befehl+" "+ $Argument + '\r' + '\n')
 	$Befehl -> "username"
-			$Inhalt -> Benutzername
+			$Argument -> Benutzername
 
 		-> "message"
-			$Inhalt -> Nachricht
+			$Argument -> Nachricht
 
 		-> "clients"
-			$Inhalt -> Benutzername
+			$Argument -> Benutzername
 	
 		-> "logout"
-			$Inhalt -> Benutzername
+			$Argument -> Benutzername
 
 
-	" " -> trennt Befehl und Inhalt
+	" " -> trennt Befehl und Argument
 	
 	'\r' + '\n' -> ende der Nachricht
 
 
-TCP_Client empfängt ein String und zerteilt das in $Befehl und $Inhalt
-	$Befehl = das erste Wort bis zur erste Leertaste
-	$Inhalt = alles nach der erste Leertaste	
+TCP_Client empfängt ein String und zerteilt das in $Befehl und $Argument
+	$Befehl = das erste Wort bis zur erste leerzeichen
+	$Argument = alles nach der erste leerzeichen	
 	 
-	wenn $Befehl=="status"
-		->wenn $Inhalt=="110nok" -> Herstellen von username nicht möglich
-		->wenn $Inhalt=="110ok" -> Herstellen von username möglich
+	wenn $Befehl=="username"
+		->wenn $Argument=="notok" -> Herstellen von username nicht möglich
+		->wenn $Argument=="ok" -> Herstellen von username möglich
 
 	wenn $Befehl=="message"
 		->inhalt an GUI weitergeben 
@@ -37,59 +45,61 @@ TCP_Client empfängt ein String und zerteilt das in $Befehl und $Inhalt
 		->logout() - true an Controller weitergeben
 
 
+//Controller: 	- TCPClient Thread -> damit er ungestört, die gesendeten DATA vom Server bearbeiten kann.
+		- listenThread -> der quasi-paralell mit den Controller und den workThread läuft -> Wenn sich ein User verbindet, soll der listenThread solange 		laufen, bis ein logout Befehl ausgeführt wird (Fals eine Nachricht aufgefasst wurde, während er noch läuft, wird sie in der UI angezeigt.)
+		- workThread -> wird erzeugt, wenn der SendeButton gedrückt ist. Dieser Thread führt die Methode des Senden vom Client aus.
+
 ___________________________________________________________________________________________________
 TCP-Server
 
 Server: localhost
 Port: 56789
 
+Zeichen Codierung: UTF-8
 
-TCP_Server sendet einen String inform von ($Befehl+" "+$Inhalt+  '\r' + '\n')
-	$befehl -> "status"
-			$Inhalt -> Statusmeldung
+
+TCP_Server sendet einen String inform von ($Befehl+" "+$Argument+  '\r' + '\n')
+	$befehl -> "username"
+			$Argument -> Statusmeldung
 
 	       -> "message"
-			$Inhalt -> Nachricht
+			$Argument -> Nachricht
 
 	       -> "clients"
-			$Inhalt -> $Teilnehmerliste
+			$Argument -> $Teilnehmerliste
 		
 		-> "logout"
-			$Inhalt -> $Username und schließt die Socket mit dem Client
+			$Argument -> $Username und schließt die Socket mit dem Client
 
 	
-	" " -> trennt $Befehl und $Inhalt
+	" " -> trennt $Befehl und $Argument
 	
 	'\r' + '\n' -> ende der Nachricht
 
 
-TCP_Server empfängt ein String und zerteilt das in $Befehl und $Inhalt
-	$Befehl = das erste Wort bis zur erste Leertaste
-	$Inhalt = alles nach der erste Leertaste		
+TCP_Server empfängt ein String und zerteilt das in $Befehl und $Argument
+	$Befehl = das erste Wort bis zur erste leerzeichen
+	$Inhalt = alles nach der erste leerzeichen		
 	
 	wenn $Befehl=="username"
-		->Inhalt wird in Hashmap geprüft ob der value (Benutzer) vorhanden ist oder nicht 
-			->falls ja -> Statusmeldung an Client ("110nok")
-			->nein -> wird in hashmap eingetragen und Statusmeldung an Client("110ok") 
+		//->Inhalt wird in Hashmap geprüft ob der value (Benutzer) vorhanden ist oder nicht 
+			->falls ja -> Statusmeldung an Client ("notok")
+			->nein -> wird in hashmap eingetragen und Statusmeldung an Client("ok") 
 	
 	wenn $Befehl=="message"
-		->wird an alle Client Teilnehmer weiter geschickt in form ("message"($Befehl) + " " + $sender_username + " >> " + $inhalt )
+		->wird an alle Client Teilnehmer weiter geschickt in form ("message"($Befehl) + " " + $sender_username + " >> " + $Argument )
 
 	
 	wenn $Befehl=="clients"
-		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die Benutzernamen mit Leertaste von einander getrennt sind. 
-		Und das in form ("clients"($Befehl)+ " " +$Inhalt+$Teilnehmerliste)
+		->wird eine String (liste der teilnehmer(username)) zurückgegeben , sodass die Benutzernamen mit leerzeichen   von einander getrennt sind. 
+		Und das in form ("clients"($Befehl)+ " " +$Argument+$Teilnehmerliste)
 
 	wenn $Befehl=="logout"
  		->Der Client wird aus der liste der Teilnehmer entfernt und Server bemerkt das der Client sich verabschiedet hat.(z.B.:quit)
   
 
-Controller 	- TCPClient Thread -> damit er ungestört, die gesendeten DATA vom Server bearbeiten kann.
-		- listenThread -> der quasi-paralell mit den Controller und den workThread läuft -> Wenn sich ein User verbindet, soll der listenThread solange laufen, bis ein logout Befehl ausgeführt wird (Fals eine Nachricht 			aufgefasst wurde, während er noch läuft, wird sie in der UI angezeigt.)
-		- workThread -> wird erzeugt, wenn der SendeButton gedrückt ist. Dieser Thread führt die Methode des Senden vom Client aus.
+___________________________________________________________________________________________________________
 
-
-Zeichen Codierung: UTF-8
 Fehlermeldung : Siehe Code - Beim senden eines unbekannten Befehls -> Exception Befehl wurde nicht erkannt! 
 Ports: 
 	besetzte Ports: netstat -ano 
