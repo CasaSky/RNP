@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_chatserver" default="compile.module.chatserver">
+  <dirname property="module.chatserver.basedir" file="${ant.file.module_chatserver}"/>
+  
+  <property name="module.jdk.home.chatserver" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.chatserver" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.chatserver" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.chatserver" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="chatserver.output.dir" value="${module.chatserver.basedir}/../out/production/ChatServer"/>
+  <property name="chatserver.testoutput.dir" value="${module.chatserver.basedir}/../out/test/ChatServer"/>
+  
+  <path id="chatserver.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="chatserver.module.production.classpath">
+    <path refid="${module.jdk.classpath.chatserver}"/>
+  </path>
+  
+  <path id="chatserver.runtime.production.module.classpath">
+    <pathelement location="${chatserver.output.dir}"/>
+  </path>
+  
+  <path id="chatserver.module.classpath">
+    <path refid="${module.jdk.classpath.chatserver}"/>
+    <pathelement location="${chatserver.output.dir}"/>
+  </path>
+  
+  <path id="chatserver.runtime.module.classpath">
+    <pathelement location="${chatserver.testoutput.dir}"/>
+    <pathelement location="${chatserver.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.chatserver">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.chatserver">
+    <patternset refid="excluded.from.module.chatserver"/>
+  </patternset>
+  
+  <path id="chatserver.module.sourcepath">
+    <dirset dir="${module.chatserver.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.chatserver" depends="compile.module.chatserver.production,compile.module.chatserver.tests" description="Compile module ChatServer"/>
+  
+  <target name="compile.module.chatserver.production" depends="register.custom.compilers" description="Compile module ChatServer; production classes">
+    <mkdir dir="${chatserver.output.dir}"/>
+    <javac2 destdir="${chatserver.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.chatserver}/javac">
+      <compilerarg line="${compiler.args.chatserver}"/>
+      <bootclasspath refid="chatserver.module.bootclasspath"/>
+      <classpath refid="chatserver.module.production.classpath"/>
+      <src refid="chatserver.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.chatserver"/>
+    </javac2>
+    
+    <copy todir="${chatserver.output.dir}">
+      <fileset dir="${module.chatserver.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.chatserver.tests" depends="register.custom.compilers,compile.module.chatserver.production" description="compile module ChatServer; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.chatserver" description="cleanup module">
+    <delete dir="${chatserver.output.dir}"/>
+    <delete dir="${chatserver.testoutput.dir}"/>
+  </target>
+</project>

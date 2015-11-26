@@ -20,13 +20,15 @@ public class TCPClient extends Thread{
     private boolean ready = false;
     
     private boolean logout = false;
+    private boolean usernameValid = false;
 
     private boolean messageReceived=false;
     private String username;
+    private boolean newUserJoined=false;
     
     //
-    private String chatroomUser;
- 
+    private String chatroomUsers;
+
     /* Portnummer */
     private final int serverPort;
 
@@ -41,7 +43,7 @@ public class TCPClient extends Thread{
 
     private boolean serviceRequested = true; // Client beenden?
 
-    public TCPClient(String hostname, int serverPort,String username) {
+    public TCPClient(String hostname, int serverPort, String username) {
         this.serverPort = serverPort;
         this.hostname = hostname;
         this.username = username;   
@@ -72,10 +74,10 @@ public class TCPClient extends Thread{
             try{
                 checkDataFromServer();
             }catch (IOException e) {
-                try {
-                    sleep(3000);
-                    } catch (InterruptedException e1) {
-                    }
+                //try {
+                    //sleep(3000);
+                    //} catch (InterruptedException e1) {
+                    //}
             }
             }
             /* Socket-Streams schliessen --> Verbindungsabbau */
@@ -95,7 +97,10 @@ public class TCPClient extends Thread{
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
-            case STATUS:  
+            case USERNAME: 
+                if (inhalt.equals("ok")) 
+                    usernameValid=true;
+                else serviceRequested = false;
             break;
             case MESSAGE: 
                 this.message = inhalt;
@@ -110,7 +115,16 @@ public class TCPClient extends Thread{
 //            }
             break;
             case CLIENTS: 
-                chatroomUser(inhalt);
+                newUserJoined=true;
+                chatroomUsers(inhalt);
+                this.notifyAll();
+//            {
+                try {
+                    sleep(3000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //saveChatroomUsers(inhalt);
             break;
             case LOGOUT:
                 serviceRequested = false;
@@ -208,11 +222,31 @@ public class TCPClient extends Thread{
     }
 
     public String getChatroomUser() {
-        return chatroomUser;
+        return chatroomUsers;
     }
 
-    private void chatroomUser(String inhalt) {
-        chatroomUser = inhalt.replaceAll(" ", "\n");        
+    private void chatroomUsers(String inhalt) {
+        chatroomUsers = inhalt.replaceAll(" ", "\n");        
     }
+    
+    public boolean isUsernameValid() {
+        return usernameValid;
+    }
+    
+    public String getChatroomUsers() {
+        return chatroomUsers;
+    }
+    
+    public boolean isNewUserJoined() {
+        return newUserJoined;
+    }
+ 
+    public void setNewUserJoined(boolean f) {
+        this.newUserJoined = false;
+    }
+
+//    private void saveChatroomUsers(String inhalt) {
+//        String[] splittedData = inhalt.split(" ");
+//    }
 
 }

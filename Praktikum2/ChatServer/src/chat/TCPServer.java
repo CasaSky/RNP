@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPServer {
    /* TCP-Server, der Verbindungsanfragen entgegennimmt */
@@ -141,9 +143,17 @@ class TCPWorkerThread extends Thread {
         switch (befehl) {
             case USERNAME:  
                 if (chatraum.usernameCheck(inhalt)){
+                    // Statt Soket Thread
                     chatraum.addTeilnehmer(socket, inhalt);
+                    sendUsernameOk();
+//           try {
+//               sleep(3000);
+//           } catch (InterruptedException ex) {
+//               Logger.getLogger(TCPWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+//           }
                     sendChatroomUsers();
                 }
+                else { sendUsernameNotOk(); workerServiceRequested= false;}
             break;
             case MESSAGE: sendMessagetoClients(inhalt);
             break;
@@ -171,11 +181,13 @@ class TCPWorkerThread extends Thread {
    private void sendChatroomUsers() throws IOException {
        String messageToSend = CLIENTS;
        ArrayList<String> users = chatraum.getAllUsernames();
-       
+       Collection<Socket> keys = chatraum.getTeilnehmer().keySet();
+       Iterator<Socket> it = keys.iterator();
        for (String username : users) {
            messageToSend += " "+username;
        }
-        writeToClient(messageToSend);  
+        outToClients = new DataOutputStream(it.next().getOutputStream());
+        writeToClients(messageToSend);  
    }
    
    private String readFromClient() throws IOException {
@@ -206,5 +218,19 @@ class TCPWorkerThread extends Thread {
         System.out.println("TCP Worker Thread " + name +
             " has written the message: " + logOutReply);
         workerServiceRequested = false;
+    }
+
+    private void sendUsernameNotOk() throws IOException {
+        String notok = USERNAME+" notok";
+        writeToClient(notok);
+        System.out.println("TCP Worker Thread " + name +
+            " has written the message: " + notok);
+    }
+    
+    private void sendUsernameOk() throws IOException {
+        String ok = USERNAME+" ok";
+        writeToClient(ok);
+        System.out.println("TCP Worker Thread " + name +
+            " has written the message: " + ok);
     }
 }

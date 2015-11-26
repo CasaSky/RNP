@@ -25,19 +25,19 @@ public class ChatRaum {
     }
     
     //fügt socket, username als teilnehmer 
-    public void addTeilnehmer(Socket socket, String username) {
+    public synchronized void addTeilnehmer(Socket socket, String username) {
         if (socket != null && username != null)
             teilnehmer.put(socket, username);
         else throw new NullPointerException("Socket oder username darf nicht null sein!");
     }
     
     //löscht den Teilnehmer aus der Liste vom Chatraum
-    public void deleteTeilnehmer(Socket socket) {
+    public synchronized void deleteTeilnehmer(Socket socket) {
         teilnehmer.remove(socket);
     }
     
     // Prüft ob username nicht vorhanden ist
-    public boolean usernameCheck(String username) {
+    public synchronized boolean usernameCheck(String username) {
         boolean result;
         if (username != null)
             result = !teilnehmer.containsValue(username);
@@ -46,13 +46,13 @@ public class ChatRaum {
         return result;
     }
     
-    public HashMap<Socket, String> getTeilnehmer() {
+    public synchronized HashMap<Socket, String> getTeilnehmer() {
         if (teilnehmer==null)
             throw new NullPointerException("Chat hat keine Teilnehmer!");
         return teilnehmer;
     }
     
-    public ArrayList<String> getAllUsernames() {
+    public synchronized ArrayList<String> getAllUsernames() {
         ArrayList<String> result = new ArrayList<>();
         Collection<String> values = teilnehmer.values();
         Iterator<String> it = values.iterator();

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_chatapp" default="compile.module.chatapp">
+  <dirname property="module.chatapp.basedir" file="${ant.file.module_chatapp}"/>
+  
+  <property name="module.jdk.home.chatapp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.chatapp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.chatapp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.chatapp" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="chatapp.output.dir" value="${module.chatapp.basedir}/../out/production/ChatApp"/>
+  <property name="chatapp.testoutput.dir" value="${module.chatapp.basedir}/../out/test/ChatApp"/>
+  
+  <path id="chatapp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="chatapp.module.production.classpath">
+    <path refid="${module.jdk.classpath.chatapp}"/>
+  </path>
+  
+  <path id="chatapp.runtime.production.module.classpath">
+    <pathelement location="${chatapp.output.dir}"/>
+  </path>
+  
+  <path id="chatapp.module.classpath">
+    <path refid="${module.jdk.classpath.chatapp}"/>
+    <pathelement location="${chatapp.output.dir}"/>
+  </path>
+  
+  <path id="chatapp.runtime.module.classpath">
+    <pathelement location="${chatapp.testoutput.dir}"/>
+    <pathelement location="${chatapp.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.chatapp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.chatapp">
+    <patternset refid="excluded.from.module.chatapp"/>
+  </patternset>
+  
+  <path id="chatapp.module.sourcepath">
+    <dirset dir="${module.chatapp.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.chatapp" depends="compile.module.chatapp.production,compile.module.chatapp.tests" description="Compile module ChatApp"/>
+  
+  <target name="compile.module.chatapp.production" depends="register.custom.compilers" description="Compile module ChatApp; production classes">
+    <mkdir dir="${chatapp.output.dir}"/>
+    <javac2 destdir="${chatapp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.chatapp}/javac">
+      <compilerarg line="${compiler.args.chatapp}"/>
+      <bootclasspath refid="chatapp.module.bootclasspath"/>
+      <classpath refid="chatapp.module.production.classpath"/>
+      <src refid="chatapp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.chatapp"/>
+    </javac2>
+    
+    <copy todir="${chatapp.output.dir}">
+      <fileset dir="${module.chatapp.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.chatapp.tests" depends="register.custom.compilers,compile.module.chatapp.production" description="compile module ChatApp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.chatapp" description="cleanup module">
+    <delete dir="${chatapp.output.dir}"/>
+    <delete dir="${chatapp.testoutput.dir}"/>
+  </target>
+</project>

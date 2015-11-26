@@ -45,29 +45,46 @@ public class ControllerImpl implements I_Controller{
             //verbindungsaufbau
             client = new TCPClient(hostname, port, username);
             client.start();
-            chatroomUI.setVisible(true);
-            login.setVisible(false);
-            listenThread = new Thread()
-            {
-                @Override
-                public void run() {
-                    //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
-                    while (!client.logoutOk()) {
-                        while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            
+            // Warten bis Client den Username geprueft hat
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if (client.isUsernameValid()) {
+                chatroomUI.setVisible(true);
+                login.setVisible(false);
+                listenThread = new Thread()
+                {
+                    @Override
+                    public void run() {
+                        //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
+                        while (!client.logoutOk()) {
+                            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                   if (client.isNewUserJoined())
+                                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
+                                   
+                                   client.setNewUserJoined(false);
                             }
-                        }
+                            
                             String tmp = chatroomUI.getMessageArea().getText();
                             chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
                             client.setReady(false);
+                        }
+                        chatroomUI.dispose();
                     }
-                            chatroomUI.dispose();
-                }
-            };
-            listenThread.start(); 
+                };
+                listenThread.start(); 
+            }
+            else 
+                JOptionPane.showMessageDialog(null, "Username existiert bereits, bitte einen anderen auswählen!");
         });
         
         chatroomUI.getSendButton().addActionListener((ActionEvent e) -> {
