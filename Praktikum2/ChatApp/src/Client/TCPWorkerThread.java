@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Controller;
+package Client;
 
 import Client.TCPClient;
 
@@ -11,13 +11,13 @@ import Client.TCPClient;
  *
  * @author sasa
  */
-public class WorkerThread extends Thread{
+public class TCPWorkerThread extends Thread{
 
     TCPClient client;
     String message;
     
     
-    public WorkerThread(TCPClient client, String message) {
+    public TCPWorkerThread(TCPClient client, String message) {
         this.client = client;
         this.message = message;
     }

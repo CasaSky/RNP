@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import Client.TCPWorkerThread;
 import Client.TCPClient;
 import Gui.ChatroomUI;
 import Gui.LoginUI;
@@ -27,7 +28,7 @@ public class ControllerImpl implements I_Controller{
     ChatroomUI chatroomUI;
     TCPClient client;
     ListenThread listenThread; // lesen
-    WorkerThread workerThread; // schreiben
+    TCPWorkerThread workerThread; // schreiben
     String username;
 
     public ControllerImpl() {
@@ -58,32 +59,6 @@ public class ControllerImpl implements I_Controller{
                 login.setVisible(false);
                 listenThread = new ListenThread(client, chatroomUI);
                 listenThread.start(); 
-//                listenThread = new Thread()
-//                {
-//                    @Override
-//                    public void run() {
-//                        //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
-//                        while (!client.logoutOk()) {
-//                            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
-//                                try {
-//                                    Thread.sleep(2000);
-//                                } catch (InterruptedException ex) {
-//                                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
-//                                }
-//                                   if (client.isNewUserJoined())
-//                                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
-//                                   
-//                                   client.setNewUserJoined(false);
-//                            }
-//                            
-//                            String tmp = chatroomUI.getMessageArea().getText();
-//                            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
-//                            client.setReady(false);
-//                        }
-//                        chatroomUI.dispose();
-//                    }
-//                };
-//                listenThread.start(); 
             }
             else 
                 JOptionPane.showMessageDialog(null, "Username existiert bereits, bitte einen anderen auswählen!");
@@ -93,13 +68,7 @@ public class ControllerImpl implements I_Controller{
             String message = chatroomUI.getMessageTextField().getText();
             chatroomUI.getMessageTextField().setText("");
             
-            workerThread = new WorkerThread(client,message);
-//            {
-//                @Override
-//                public void run() {
-//                    client.sendMessage(message);
-//                }
-//            };
+            workerThread = new TCPWorkerThread(client,message);
             workerThread.start();
         });  
         

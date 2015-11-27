@@ -5,20 +5,18 @@
  */
 package startUp;
 
-import Controller.ControllerImpl;
+import chat.TCPServer;
 
 /**
  *
- * @author talal
+ * @author sasa
  */
-public class startUp {
-
-    /**
-     * @param args the command linue arguments
-     */
+public class ServerStartUp {
+    
     public static void main(String[] args) {
-        ControllerImpl controller = new ControllerImpl(); 
-        ControllerImpl controller2 = new ControllerImpl();
-    }
+        /* Erzeuge Server und starte ihn */
+        TCPServer myServer = new TCPServer(56789, 2);
+        myServer.startServer();
+   }
     
 }

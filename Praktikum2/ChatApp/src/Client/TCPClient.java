@@ -147,15 +147,20 @@ public class TCPClient extends Thread{
 
     private void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
-        outToServer.writeBytes(request + '\r' + '\n');
+        String newRequest;
+        newRequest = replaceUmlaut(request);
+        outToServer.writeBytes(newRequest + '\r' + '\n');
         //System.out.println("TCP Client has sent the message: " + request);
     }
 
     private String readFromServer() throws IOException {
         /* Lies die Antwort (reply) vom Server */
         String reply = inFromServer.readLine();
+        String newRequest;
+        newRequest = replaceBackUmlaut(reply);
+
         System.out.println("TCP Client got from Server: " + reply);
-        return reply;
+        return newRequest;
     }
     
     public void sendMessage(String message) {
@@ -248,5 +253,60 @@ public class TCPClient extends Thread{
 //    private void saveChatroomUsers(String inhalt) {
 //        String[] splittedData = inhalt.split(" ");
 //    }
+
+    
+     private String replaceUmlaut(String input) {
+ 
+     //replace all lower Umlauts
+     String o_strResult =
+             input
+             .replaceAll("ü", "ue")
+             .replaceAll("ö", "oe")
+             .replaceAll("ä", "ae")
+             .replaceAll("ß", "ss");
+ 
+     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
+     o_strResult =
+             o_strResult
+             .replaceAll("Ü(?=[a-zäöüß ])", "Ue")
+             .replaceAll("Ö(?=[a-zäöüß ])", "Oe")
+             .replaceAll("Ä(?=[a-zäöüß ])", "Ae");
+ 
+     //now replace all the other capital umlaute
+     o_strResult =
+             o_strResult
+             .replaceAll("Ü", "UE")
+             .replaceAll("Ö", "OE")
+             .replaceAll("Ä", "AE");
+ 
+     return o_strResult;
+ }
+     
+     
+     private String replaceBackUmlaut(String input) {
+ 
+     //replace all lower Umlauts
+     String o_strResult =
+             input
+             .replaceAll("ue", "ü")
+             .replaceAll("oe", "ö")
+             .replaceAll("ae", "ä");
+ 
+     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
+     o_strResult =
+             o_strResult
+             .replaceAll("Ue", "Ü(?=[a-zäöüß ])")
+             .replaceAll("Oe", "Ö(?=[a-zäöüß ])")
+             .replaceAll("Ae", "Ä(?=[a-zäöüß ])");
+ 
+     //now replace all the other capital umlaute
+     o_strResult =
+             o_strResult
+             .replaceAll("UE", "Ü")
+             .replaceAll("OE", "Ö")
+             .replaceAll("AE", "Ä");
+ 
+     return o_strResult;
+ }
 
 }
