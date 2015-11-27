@@ -1,0 +1,40 @@
+TCP-Client
+
+Server: localhost
+Port: 56789
+
+Zeichen Codierung: UTF-8
+	somit werden die umlaute nicht unterstützt.
+
+
+TCP_Client sendet einen String in form von ($Befehl+" "+ $Argument + '\r' + '\n')
+TCP_Client empfängt ein String und zerteilt das in $Befehl und $Argument
+
+	
+	$Befehl = das erste Wort bis zur erste Leerzeichen
+	$Argument = alles nach der erste Leerzeichen
+	
+	+ -> zum konkadieren von Befehl, Leerzeichen und Argument
+	
+	" " -> trennt Befehl und Argument
+	
+	'\r' + '\n' -> ende der Nachricht
+
+	Anfrage) $Befehl -> "username" --- $Argument -> Benutzername (Beispiel: "username musterman")
+	Antwort) "username notok" ($Befehl -> "username" --- $Argument -> "notok") Hinweis: Herstellen von username nicht möglich
+		 ODER
+		 "username ok" ($Befehl -> "username" --- $Argument -> "ok") Hinweis: Herstellen von username möglich
+
+	Anfrage) $Befehl -> "message" --- $Argument -> Nachricht (Beispiel: "message hey, wie geht es dir")
+	Antwort) "message musterman >> hey, wie gehts es dir?" ($Befehl -> "message" --- $Argument -> "musterman >> hey, wie gehts es dir?")
+			......
+		 "message musterman >> gut danke" ($Befehl -> "message" --- $Argument -> "musterman >> gut danke")
+		
+
+	Anfrage) $Befehl -> "clients" --- $Argument -> Benutzername (Beispiel: "clients musterman")
+	Antwort) "clients musterman musterman2 musterman3" ($Befehl -> "clients" --- $Argument -> "musterman musterman2 musterman3")	
+		 Hinweis: Benutzernamen mit Leerzeichen getrennt
+
+	Anfrage) $Befehl -> "logout" --- $Argument -> Benutzername (Beispiel: "logout musterman")
+	Antwort) "logout true" ($Befehl -> "logout" --- $Argument -> "true") abmelden möglich
+
