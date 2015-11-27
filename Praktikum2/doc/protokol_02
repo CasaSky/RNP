@@ -27,9 +27,7 @@ TCP_Client empfängt ein String und zerteilt das in $Befehl und $Argument
 
 	Anfrage) $Befehl -> "message" --- $Argument -> Nachricht (Beispiel: "message hey, wie geht es dir")
 	Antwort) "message musterman >> hey, wie gehts es dir?" ($Befehl -> "message" --- $Argument -> "musterman >> hey, wie gehts es dir?")
-			......
-		 "message musterman >> gut danke" ($Befehl -> "message" --- $Argument -> "musterman >> gut danke")
-		
+			......		
 
 	Anfrage) $Befehl -> "clients" --- $Argument -> Benutzername (Beispiel: "clients musterman")
 	Antwort) "clients musterman musterman2 musterman3" ($Befehl -> "clients" --- $Argument -> "musterman musterman2 musterman3")	
@@ -37,4 +35,14 @@ TCP_Client empfängt ein String und zerteilt das in $Befehl und $Argument
 
 	Anfrage) $Befehl -> "logout" --- $Argument -> Benutzername (Beispiel: "logout musterman")
 	Antwort) "logout true" ($Befehl -> "logout" --- $Argument -> "true") abmelden möglich
+
+
+	Antworten ohne anfrage)
+	 	 "message musterman >> hey, wie gehts es dir?" ($Befehl -> "message" --- $Argument -> "musterman >> hey, wie gehts es dir?")
+			......
+	 	 "message musterman >> gut danke" ($Befehl -> "message" --- $Argument -> "musterman >> gut danke")
+		 
+
+		 "clients musterman musterman2 musterman3" ($Befehl -> "clients" --- $Argument -> "musterman musterman2 musterman3")
+	 
 
