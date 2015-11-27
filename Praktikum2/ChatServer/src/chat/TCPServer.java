@@ -10,14 +10,8 @@ package chat;
  *        Maximale Anzahl Worker-Threads begrenzt durch Semaphore
  *  
  */
-import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TCPServer {
    /* TCP-Server, der Verbindungsanfragen entgegennimmt */

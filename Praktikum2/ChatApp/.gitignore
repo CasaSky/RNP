@@ -10,6 +10,7 @@
 *.jar
 *.war
 *.ear
+*.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -24,6 +25,7 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+
 
 /build/
 Praktikum2/ChatApp/build/

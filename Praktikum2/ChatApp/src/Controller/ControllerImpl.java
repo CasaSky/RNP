@@ -26,8 +26,8 @@ public class ControllerImpl implements I_Controller{
     LoginUI login;
     ChatroomUI chatroomUI;
     TCPClient client;
-    Thread listenThread; // lesen
-    Thread workThread; // schreiben
+    ListenThread listenThread; // lesen
+    WorkerThread workerThread; // schreiben
     String username;
 
     public ControllerImpl() {
@@ -56,32 +56,34 @@ public class ControllerImpl implements I_Controller{
             if (client.isUsernameValid()) {
                 chatroomUI.setVisible(true);
                 login.setVisible(false);
-                listenThread = new Thread()
-                {
-                    @Override
-                    public void run() {
-                        //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
-                        while (!client.logoutOk()) {
-                            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
-                                try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException ex) {
-                                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                                   if (client.isNewUserJoined())
-                                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
-                                   
-                                   client.setNewUserJoined(false);
-                            }
-                            
-                            String tmp = chatroomUI.getMessageArea().getText();
-                            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
-                            client.setReady(false);
-                        }
-                        chatroomUI.dispose();
-                    }
-                };
+                listenThread = new ListenThread(client, chatroomUI);
                 listenThread.start(); 
+//                listenThread = new Thread()
+//                {
+//                    @Override
+//                    public void run() {
+//                        //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
+//                        while (!client.logoutOk()) {
+//                            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
+//                                try {
+//                                    Thread.sleep(2000);
+//                                } catch (InterruptedException ex) {
+//                                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+//                                }
+//                                   if (client.isNewUserJoined())
+//                                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
+//                                   
+//                                   client.setNewUserJoined(false);
+//                            }
+//                            
+//                            String tmp = chatroomUI.getMessageArea().getText();
+//                            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
+//                            client.setReady(false);
+//                        }
+//                        chatroomUI.dispose();
+//                    }
+//                };
+//                listenThread.start(); 
             }
             else 
                 JOptionPane.showMessageDialog(null, "Username existiert bereits, bitte einen anderen auswählen!");
@@ -90,14 +92,15 @@ public class ControllerImpl implements I_Controller{
         chatroomUI.getSendButton().addActionListener((ActionEvent e) -> {
             String message = chatroomUI.getMessageTextField().getText();
             chatroomUI.getMessageTextField().setText("");
-            workThread = new Thread()
-            {
-                @Override
-                public void run() {
-                    client.sendMessage(message);
-                }
-            };
-            workThread.start();
+            
+            workerThread = new WorkerThread(client,message);
+//            {
+//                @Override
+//                public void run() {
+//                    client.sendMessage(message);
+//                }
+//            };
+            workerThread.start();
         });  
         
         

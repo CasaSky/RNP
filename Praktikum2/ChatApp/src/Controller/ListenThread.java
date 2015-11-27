@@ -1,0 +1,48 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Controller;
+
+import Client.TCPClient;
+import Gui.ChatroomUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author sasa
+ */
+public class ListenThread extends Thread{
+    TCPClient client;
+    ChatroomUI chatroomUI ;
+
+    ListenThread(TCPClient client, ChatroomUI chatroomUI) {
+        this.client = client;
+        this.chatroomUI = chatroomUI;
+    }
+    
+    @Override
+    public void run() {
+        //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
+        while (!client.logoutOk()) {
+            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                   if (client.isNewUserJoined())
+                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
+
+                   client.setNewUserJoined(false);
+            }
+
+            String tmp = chatroomUI.getMessageArea().getText();
+            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
+            client.setReady(false);
+        }
+        chatroomUI.dispose();
+    }    
+}
