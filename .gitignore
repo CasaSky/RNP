@@ -25,23 +25,10 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 
-
-Praktikum2/ChatApp/build/built-jar.properties
 Praktikum2/ChatApp/build/
+Praktikum2/ChatApp/build/built-jar.properties
+ChatApp/build/
+Praktikum2/ChatApp/nbproject
+/Praktikum2/ChatServer/nbproject/
 
-
-/Praktikum2/Praktikum2/build/
-/Praktikum2/Praktikum2/nbproject/
-/Praktikum2/Praktikum2/nbproject/private/private.xml
-
-/Praktikum2/Praktikum2/test/
-/Praktikum2/Praktikum2/manifest.mf
-/Praktikum2/Praktikum2/build.xml
-/Praktikum2/Praktikum2/dist/
-/Praktikum2/Chat/nbproject/private/
-/Praktikum2/Chat/dist/
-/Praktikum2/Chat/build/
-/Praktikum2/ChatServer/nbproject/private/
-/Praktikum2/ChatServer/build/
-Praktikum2/ChatApp/build
 

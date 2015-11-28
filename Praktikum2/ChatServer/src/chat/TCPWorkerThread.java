@@ -79,6 +79,7 @@ class TCPWorkerThread extends Thread {
        String inhalt;
        String[] splittedData = data.split(" ", 2);
 
+        if(splittedData.length != 2) return; 
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
@@ -105,6 +106,9 @@ class TCPWorkerThread extends Thread {
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
         }
+        
+                    
+        
    }
    
    // leitet die erhaltene Nachricht vom Client an allen Clients weiter
@@ -127,6 +131,7 @@ class TCPWorkerThread extends Thread {
        for (String username : users) {
            messageToSend += " "+username;
        }
+       
         outToClients = new DataOutputStream(it.next().getOutputStream());
         writeToClients(messageToSend);  
    }
