@@ -14,35 +14,37 @@ import java.util.logging.Logger;
  *
  * @author sasa
  */
-public class ListenThread extends Thread{
-    TCPClient client;
-    ChatroomUI chatroomUI ;
+public class ListenThread extends Thread {
+    private TCPClient client;
+    private ChatroomUI chatroomUI;
 
     ListenThread(TCPClient client, ChatroomUI chatroomUI) {
         this.client = client;
         this.chatroomUI = chatroomUI;
     }
-    
+
     @Override
     public void run() {
         //Solange kein Logout hör auf das Schreiben zu, sonst Fenster schließen
         while (!client.logoutOk()) {
-            while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                   if (client.isNewUserJoined())
-                    chatroomUI.getUsersArea().setText(client.getChatroomUsers());
-
-                   client.setNewUserJoined(false);
+            //while (!client.isReady()) { // Falls etwas zum Schreib ist, wird ready gesetzt
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ControllerImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
+            if (client.isNewUserJoined()) {
+                chatroomUI.getUsersArea().setText(client.getChatroomUsers());
+                client.setNewUserJoined(false);
+            }
+            // }
 
-            String tmp = chatroomUI.getMessageArea().getText();
-            chatroomUI.getMessageArea().setText(tmp+"\n"+client.getMessage());
-            client.setReady(false);
+            if (client.isReady()) {
+                String tmp = chatroomUI.getMessageArea().getText();
+                chatroomUI.getMessageArea().setText(tmp + "\n" + client.getMessage());
+                client.setReady(false);
+            }
         }
         chatroomUI.dispose();
-    }    
+    }
 }

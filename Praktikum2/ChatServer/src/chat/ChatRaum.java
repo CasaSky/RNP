@@ -18,22 +18,22 @@ import java.util.Iterator;
 public class ChatRaum {
     
     // Teilnehmer besteht aus Sitzung(Socket) und Username(String)
-    private HashMap<Socket, String> teilnehmer;
+    private HashMap<TCPWorkerThread, String> teilnehmer;
 
     public ChatRaum() {
         teilnehmer = new HashMap<>();
     }
     
     //fügt socket, username als teilnehmer 
-    public synchronized void addTeilnehmer(Socket socket, String username) {
-        if (socket != null && username != null)
-            teilnehmer.put(socket, username);
-        else throw new NullPointerException("Socket oder username darf nicht null sein!");
+    public synchronized void addTeilnehmer(TCPWorkerThread tcpWorkerThread, String username) {
+        if (tcpWorkerThread != null && username != null)
+            teilnehmer.put(tcpWorkerThread, username);
+        else throw new NullPointerException("tcpWorkerThread oder username darf nicht null sein!");
     }
     
     //löscht den Teilnehmer aus der Liste vom Chatraum
-    public synchronized void deleteTeilnehmer(Socket socket) {
-        teilnehmer.remove(socket);
+    public synchronized void deleteTeilnehmer(TCPWorkerThread tcpWorkerThread) {
+        teilnehmer.remove(tcpWorkerThread);
     }
     
     // Prüft ob username nicht vorhanden ist
@@ -46,7 +46,7 @@ public class ChatRaum {
         return result;
     }
     
-    public synchronized HashMap<Socket, String> getTeilnehmer() {
+    public synchronized HashMap<TCPWorkerThread, String> getTeilnehmer() {
         if (teilnehmer==null)
             throw new NullPointerException("Chat hat keine Teilnehmer!");
         return teilnehmer;

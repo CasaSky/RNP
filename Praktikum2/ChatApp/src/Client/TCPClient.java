@@ -100,7 +100,8 @@ public class TCPClient extends Thread{
             case USERNAME: 
                 if (inhalt.equals("ok")) 
                     usernameValid=true;
-                else serviceRequested = false;
+                else
+                    serviceRequested = false;
             break;
             case MESSAGE: 
                 this.message = inhalt;
@@ -116,6 +117,7 @@ public class TCPClient extends Thread{
             break;
             case CLIENTS: 
                 newUserJoined=true;
+                System.err.println("Oh new User");
                 chatroomUsers(inhalt);
                 this.notifyAll();
 //            {

@@ -13,16 +13,14 @@ import Client.TCPClient;
  */
 public class TCPWorkerThread extends Thread{
 
-    TCPClient client;
-    String message;
-    
+    private TCPClient client;
+    private String message;
     
     public TCPWorkerThread(TCPClient client, String message) {
         this.client = client;
         this.message = message;
     }
-    
-   
+
     @Override
     public void run() {
         client.sendMessage(message);

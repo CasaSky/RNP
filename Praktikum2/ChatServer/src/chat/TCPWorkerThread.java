@@ -34,7 +34,7 @@ class TCPWorkerThread extends Thread {
    private BufferedReader inFromClient;
    private DataOutputStream outToClient;
    private DataOutputStream outToClients; // OutputStream für alle Clients
-   boolean workerServiceRequested = true; // Arbeitsthread beenden?
+   private boolean workerServiceRequested = true; // Arbeitsthread beenden?
 
    public TCPWorkerThread(int num, Socket sock, TCPServer server, ChatRaum chatraum) {
       /* Konstruktor */
@@ -60,8 +60,7 @@ class TCPWorkerThread extends Thread {
             /* prüft eingehende Data vom Client und erledigt die Anforderung */
             checkDataFromClient();
          }
-
-         /* Socket-Streams schliessen --> Verbindungsabbau */
+          /* Socket-Streams schliessen --> Verbindungsabbau */
          socket.close();
       } catch (IOException e) {
          System.err.println("Connection aborted by client!");
@@ -79,46 +78,39 @@ class TCPWorkerThread extends Thread {
        String inhalt;
        String[] splittedData = data.split(" ", 2);
 
-        if(splittedData.length != 2) return; 
+        if(splittedData.length != 2) return; /// TODO
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
             case USERNAME:  
                 if (chatraum.usernameCheck(inhalt)){
-                    // Statt Soket Thread
-                    chatraum.addTeilnehmer(socket, inhalt);
+                    chatraum.addTeilnehmer(this, inhalt);
                     sendUsernameOk();
-//           try {
-//               sleep(3000);
-//           } catch (InterruptedException ex) {
-//               Logger.getLogger(TCPWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
-//           }
                     sendChatroomUsers();
                 }
-                else { sendUsernameNotOk(); workerServiceRequested= false;}
+                else {
+                    sendUsernameNotOk();
+                    workerServiceRequested= false;
+                }
             break;
             case MESSAGE: sendMessagetoClients(inhalt);
             break;
             case CLIENTS: sendChatroomUsers();
             break;
-            case LOGOUT: chatraum.deleteTeilnehmer(socket); sendLogoutOK(inhalt);
+            case LOGOUT: chatraum.deleteTeilnehmer(this); sendChatroomUsers(); sendLogoutOK(inhalt);
             break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
         }
-        
-                    
-        
    }
    
    // leitet die erhaltene Nachricht vom Client an allen Clients weiter
    private void sendMessagetoClients(String inhalt) throws IOException {
-       
-       Collection<Socket> keys = chatraum.getTeilnehmer().keySet();
-       Iterator<Socket> it = keys.iterator();
+       Collection<TCPWorkerThread> keys = chatraum.getTeilnehmer().keySet();
+       Iterator<TCPWorkerThread> it = keys.iterator();
        while (it.hasNext()) {
-            outToClients = new DataOutputStream(it.next().getOutputStream());
-            writeToClients(MESSAGE+" "+inhalt);
+            // nicht mehr outToClients = new DataOutputStream(it.next().getOutputStream());
+            it.next().writeToClient(MESSAGE+" "+inhalt);
        }
    }
    
@@ -126,14 +118,15 @@ class TCPWorkerThread extends Thread {
    private void sendChatroomUsers() throws IOException {
        String messageToSend = CLIENTS;
        ArrayList<String> users = chatraum.getAllUsernames();
-       Collection<Socket> keys = chatraum.getTeilnehmer().keySet();
-       Iterator<Socket> it = keys.iterator();
+       Collection<TCPWorkerThread> keys = chatraum.getTeilnehmer().keySet();
        for (String username : users) {
            messageToSend += " "+username;
        }
        
-        outToClients = new DataOutputStream(it.next().getOutputStream());
-        writeToClients(messageToSend);  
+        // nicht mehr outToClients = new DataOutputStream(it.next().getOutputStream());
+       Iterator<TCPWorkerThread> it = keys.iterator();
+       while (it.hasNext())
+        it.next().writeToClient(messageToSend);
    }
    
    private String readFromClient() throws IOException {

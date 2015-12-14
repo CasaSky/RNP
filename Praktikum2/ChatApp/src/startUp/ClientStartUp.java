@@ -12,7 +12,6 @@ import Controller.ControllerImpl;
  * @author talal
  */
 public class ClientStartUp {
-
     /**
      * @param args the command linue arguments
      */
@@ -20,5 +19,4 @@ public class ClientStartUp {
         ControllerImpl controller = new ControllerImpl(); 
         ControllerImpl controller2 = new ControllerImpl();
     }
-    
 }
