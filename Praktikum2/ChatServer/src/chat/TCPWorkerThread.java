@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -51,7 +52,7 @@ class TCPWorkerThread extends Thread {
 
       try {
          /* Socket-Basisstreams durch spezielle Streams filtern */
-         inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
          outToClient = new DataOutputStream(socket.getOutputStream());
 //         outToClients = outToClient;
         
@@ -78,15 +79,21 @@ class TCPWorkerThread extends Thread {
        String inhalt;
        String[] splittedData = data.split(" ", 2);
 
-        if(splittedData.length != 2) return; /// TODO
+        if(splittedData.length != 2) {
+            System.err.println("Befehl wurde nicht erkannt!");
+            return;
+        }
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
             case USERNAME:  
-                if (chatraum.usernameCheck(inhalt)){
-                    chatraum.addTeilnehmer(this, inhalt);
-                    sendUsernameOk();
-                    sendChatroomUsers();
+                if (!inhalt.contains(" ") && chatraum.usernameCheck(inhalt)){
+                    if (!chatraum.getTeilnehmer().containsKey(this)) {
+                        chatraum.addTeilnehmer(this, inhalt);
+                        sendUsernameOk();
+                        sendChatroomUsers();
+                    }
+                    else System.err.println("You already logged in");
                 }
                 else {
                     sendUsernameNotOk();
@@ -109,7 +116,6 @@ class TCPWorkerThread extends Thread {
        Collection<TCPWorkerThread> keys = chatraum.getTeilnehmer().keySet();
        Iterator<TCPWorkerThread> it = keys.iterator();
        while (it.hasNext()) {
-            // nicht mehr outToClients = new DataOutputStream(it.next().getOutputStream());
             it.next().writeToClient(MESSAGE+" "+inhalt);
        }
    }
@@ -138,18 +144,19 @@ class TCPWorkerThread extends Thread {
 
    private void writeToClient(String reply) throws IOException {
       /* Sende den String als Antwortzeile (mit CRLF) zum Client */
-      outToClient.writeBytes(reply + '\r' + '\n');
+      //outToClient.writeBytes(reply + '\r' + '\n');
+       outToClient.write((reply + '\r' + '\n').getBytes(Charset.forName("UTF-8")));
       System.out.println("TCP Worker Thread " + name +
             " has written the message: " + reply);
    }
-   
+
    // write über den OutputStream der für alle Clients gedacht ist
-    private void writeToClients(String reply) throws IOException {
+    //private void writeToClients(String reply) throws IOException {
       /* Sende den String als Antwortzeile (mit CRLF) zum Client */
-      outToClients.writeBytes(reply + '\r' + '\n');
-      System.out.println("TCP Worker Thread " + name +
-            " has written the message: " + reply);
-   }
+      //outToClients.writeBytes(reply + '\r' + '\n');
+      //System.out.println("TCP Worker Thread " + name +
+           // " has written the message: " + reply);
+   //}
 
     private void sendLogoutOK(String inhalt) throws IOException {
         String logOutReply = LOGOUT+" "+inhalt;

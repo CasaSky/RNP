@@ -11,12 +11,12 @@ import Client.TCPClient;
  *
  * @author sasa
  */
-public class TCPWorkerThread extends Thread{
+public class ClientWorkerThread extends Thread{
 
     private TCPClient client;
     private String message;
     
-    public TCPWorkerThread(TCPClient client, String message) {
+    public ClientWorkerThread(TCPClient client, String message) {
         this.client = client;
         this.message = message;
     }

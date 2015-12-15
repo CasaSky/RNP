@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Client.TCPWorkerThread;
+import Client.ClientWorkerThread;
 import Client.TCPClient;
 import Gui.ChatroomUI;
 import Gui.LoginUI;
@@ -28,7 +28,7 @@ public class ControllerImpl implements I_Controller{
     private ChatroomUI chatroomUI;
     private TCPClient client;
     private ListenThread listenThread; // lesen
-    private TCPWorkerThread workerThread; // schreiben
+    private ClientWorkerThread workerThread; // schreiben
     private String username;
 
     public ControllerImpl() {
@@ -68,7 +68,7 @@ public class ControllerImpl implements I_Controller{
             String message = chatroomUI.getMessageTextField().getText();
             chatroomUI.getMessageTextField().setText("");
             
-            workerThread = new TCPWorkerThread(client,message);
+            workerThread = new ClientWorkerThread(client,message);
             workerThread.start();
         });  
         

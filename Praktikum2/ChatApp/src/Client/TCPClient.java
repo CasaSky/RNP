@@ -6,6 +6,7 @@ package Client;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +63,7 @@ public class TCPClient extends Thread{
             /* Socket-Basisstreams durch spezielle Streams filtern */
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
             inFromServer = new BufferedReader(new InputStreamReader(
-                    clientSocket.getInputStream()));
+                    clientSocket.getInputStream(), "UTF-8"));
             
             //sendet den Benutzernamen
             sendUsername();
@@ -149,20 +150,20 @@ public class TCPClient extends Thread{
 
     private void writeToServer(String request) throws IOException {
         /* Sende eine Zeile (mit CRLF) zum Server */
-        String newRequest;
-        newRequest = replaceUmlaut(request);
-        outToServer.writeBytes(newRequest + '\r' + '\n');
+        //String newRequest;
+        //newRequest = replaceUmlaut(request);
+        outToServer.write((request + '\r' + '\n').getBytes(Charset.forName("UTF-8")));
         //System.out.println("TCP Client has sent the message: " + request);
     }
 
     private String readFromServer() throws IOException {
         /* Lies die Antwort (reply) vom Server */
         String reply = inFromServer.readLine();
-        String newRequest;
-        newRequest = replaceBackUmlaut(reply);
+        //String newRequest;
+        //newRequest = replaceBackUmlaut(reply);
 
         System.out.println("TCP Client got from Server: " + reply);
-        return newRequest;
+        return reply;
     }
     
     public void sendMessage(String message) {
@@ -251,64 +252,4 @@ public class TCPClient extends Thread{
     public void setNewUserJoined(boolean f) {
         this.newUserJoined = false;
     }
-
-//    private void saveChatroomUsers(String inhalt) {
-//        String[] splittedData = inhalt.split(" ");
-//    }
-
-    
-     private String replaceUmlaut(String input) {
- 
-     //replace all lower Umlauts
-     String o_strResult =
-             input
-             .replaceAll("ü", "ue")
-             .replaceAll("ö", "oe")
-             .replaceAll("ä", "ae")
-             .replaceAll("ß", "ss");
- 
-     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
-     o_strResult =
-             o_strResult
-             .replaceAll("Ü(?=[a-zäöüß ])", "Ue")
-             .replaceAll("Ö(?=[a-zäöüß ])", "Oe")
-             .replaceAll("Ä(?=[a-zäöüß ])", "Ae");
- 
-     //now replace all the other capital umlaute
-     o_strResult =
-             o_strResult
-             .replaceAll("Ü", "UE")
-             .replaceAll("Ö", "OE")
-             .replaceAll("Ä", "AE");
- 
-     return o_strResult;
- }
-     
-     
-     private String replaceBackUmlaut(String input) {
- 
-     //replace all lower Umlauts
-     String o_strResult =
-             input
-             .replaceAll("ue", "ü")
-             .replaceAll("oe", "ö")
-             .replaceAll("ae", "ä");
- 
-     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
-     o_strResult =
-             o_strResult
-             .replaceAll("Ue", "Ü(?=[a-zäöüß ])")
-             .replaceAll("Oe", "Ö(?=[a-zäöüß ])")
-             .replaceAll("Ae", "Ä(?=[a-zäöüß ])");
- 
-     //now replace all the other capital umlaute
-     o_strResult =
-             o_strResult
-             .replaceAll("UE", "Ü")
-             .replaceAll("OE", "Ö")
-             .replaceAll("AE", "Ä");
- 
-     return o_strResult;
- }
-
 }
