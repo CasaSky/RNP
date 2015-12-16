@@ -34,7 +34,6 @@ class TCPWorkerThread extends Thread {
    private final TCPServer server;
    private BufferedReader inFromClient;
    private DataOutputStream outToClient;
-   private DataOutputStream outToClients; // OutputStream für alle Clients
    private boolean workerServiceRequested = true; // Arbeitsthread beenden?
 
    public TCPWorkerThread(int num, Socket sock, TCPServer server, ChatRaum chatraum) {
@@ -54,8 +53,7 @@ class TCPWorkerThread extends Thread {
          /* Socket-Basisstreams durch spezielle Streams filtern */
          inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
          outToClient = new DataOutputStream(socket.getOutputStream());
-//         outToClients = outToClient;
-        
+
         // Socket bleibt offen -> checkDataFromClient wird solange aufgerufen werden, bis workerServiceRequested = false -> das heißt der Benutzer möchte sich abmelden -> Danach wird Socket geschloßen 
          while (workerServiceRequested) {
             /* prüft eingehende Data vom Client und erledigt die Anforderung */
@@ -80,22 +78,26 @@ class TCPWorkerThread extends Thread {
        String[] splittedData = data.split(" ", 2);
 
         if(splittedData.length != 2) {
-            System.err.println("Befehl wurde nicht erkannt!");
+            System.err.println("Data Format incompatibel. Hinweis siehe Protokoll!");
             return;
         }
         befehl = splittedData[0];
         inhalt = splittedData[1];
         switch (befehl) {
-            case USERNAME:  
-                if (!inhalt.contains(" ") && chatraum.usernameCheck(inhalt)){
-                    if (!chatraum.getTeilnehmer().containsKey(this)) {
+            case USERNAME:
+                if (chatraum.getTeilnehmer().containsKey(this)) { // Falls der WorkerThread bereits im Chat ist
+                    writeToClient("You already logged in");
+                    System.err.println("You already logged in");
+                    sendUsernameNotOk();
+                    workerServiceRequested = false;
+                }
+                else if (!inhalt.contains(" ") && chatraum.usernameCheck(inhalt)) { // Falls Benutzername keine Leerezeichen enthaelt und nicht bereits im Chat vorhanden
                         chatraum.addTeilnehmer(this, inhalt);
+                        System.err.println("New user joined!");
                         sendUsernameOk();
                         sendChatroomUsers();
-                    }
-                    else System.err.println("You already logged in");
                 }
-                else {
+                else { // Falls der Name bereits existiert
                     sendUsernameNotOk();
                     workerServiceRequested= false;
                 }
@@ -129,10 +131,9 @@ class TCPWorkerThread extends Thread {
            messageToSend += " "+username;
        }
        
-        // nicht mehr outToClients = new DataOutputStream(it.next().getOutputStream());
        Iterator<TCPWorkerThread> it = keys.iterator();
        while (it.hasNext())
-        it.next().writeToClient(messageToSend);
+           it.next().writeToClient(messageToSend);
    }
    
    private String readFromClient() throws IOException {
@@ -150,34 +151,20 @@ class TCPWorkerThread extends Thread {
             " has written the message: " + reply);
    }
 
-   // write über den OutputStream der für alle Clients gedacht ist
-    //private void writeToClients(String reply) throws IOException {
-      /* Sende den String als Antwortzeile (mit CRLF) zum Client */
-      //outToClients.writeBytes(reply + '\r' + '\n');
-      //System.out.println("TCP Worker Thread " + name +
-           // " has written the message: " + reply);
-   //}
-
     private void sendLogoutOK(String inhalt) throws IOException {
         String logOutReply = LOGOUT+" "+inhalt;
         writeToClient(logOutReply);
-        System.out.println("TCP Worker Thread " + name +
-            " has written the message: " + logOutReply);
         workerServiceRequested = false;
     }
 
     private void sendUsernameNotOk() throws IOException {
         String notok = USERNAME+" notok";
         writeToClient(notok);
-        System.out.println("TCP Worker Thread " + name +
-            " has written the message: " + notok);
     }
     
     private void sendUsernameOk() throws IOException {
         String ok = USERNAME+" ok";
         writeToClient(ok);
-        System.out.println("TCP Worker Thread " + name +
-            " has written the message: " + ok);
     }
 }
 

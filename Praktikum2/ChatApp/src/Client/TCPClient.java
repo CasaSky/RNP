@@ -4,6 +4,7 @@ package Client;
  * Autor: sasa
  */
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
@@ -14,7 +15,6 @@ public class TCPClient extends Thread{
     
     private final String USERNAME="username";
     private final String MESSAGE="message";
-    private final String STATUS="status";
     private final String CLIENTS="clients";
     private final String LOGOUT="logout";
     
@@ -23,7 +23,7 @@ public class TCPClient extends Thread{
     private boolean logout = false;
     private boolean usernameValid = false;
 
-    private boolean messageReceived=false;
+    //private boolean messageReceived=false;
     private String username;
     private boolean newUserJoined=false;
     
@@ -58,8 +58,7 @@ public class TCPClient extends Thread{
         try {
             /* Socket erzeugen --> Verbindungsaufbau mit dem Server */
             clientSocket = new Socket(hostname, serverPort);
-            
-            
+
             /* Socket-Basisstreams durch spezielle Streams filtern */
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
             inFromServer = new BufferedReader(new InputStreamReader(
@@ -68,17 +67,14 @@ public class TCPClient extends Thread{
             //sendet den Benutzernamen
             sendUsername();
             
-            //sende eine client teilnehmer anfrage
-//            sendClients();
-            
             while(serviceRequested) {
             try{
                 checkDataFromServer();
             }catch (IOException e) {
-                //try {
-                    //sleep(3000);
-                    //} catch (InterruptedException e1) {
-                    //}
+                writeToServer("Fehler beim Empfangen von Data");
+                System.err.println("Fehler beim Empfangen von Data");
+                JOptionPane.showMessageDialog(null, "Fehler beim Empfangen von Data, Sie werden abgemeldet...");
+                sendLogout(username);
             }
             }
             /* Socket-Streams schliessen --> Verbindungsabbau */
@@ -108,40 +104,17 @@ public class TCPClient extends Thread{
                 this.message = inhalt;
                 ready = true;
                 this.notifyAll();
-//            {
-                try {
-                    sleep(3000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-//            }
             break;
             case CLIENTS: 
                 newUserJoined=true;
-                System.err.println("Oh new User");
                 chatroomUsers(inhalt);
                 this.notifyAll();
-//            {
-                try {
-                    sleep(3000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                //saveChatroomUsers(inhalt);
             break;
             case LOGOUT:
                 serviceRequested = false;
                 ready=true;
                 logout=true;
-                System.err.println("JO ich führe das aus");
                 this.notifyAll();
-                
-                try {
-                    sleep(3000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
             break;
             default: System.err.println("Befehl wurde nicht erkannt!");//throw new IOException("Befehl wurde nicht erkannt");
             break;
@@ -159,9 +132,6 @@ public class TCPClient extends Thread{
     private String readFromServer() throws IOException {
         /* Lies die Antwort (reply) vom Server */
         String reply = inFromServer.readLine();
-        //String newRequest;
-        //newRequest = replaceBackUmlaut(reply);
-
         System.out.println("TCP Client got from Server: " + reply);
         return reply;
     }
@@ -179,7 +149,6 @@ public class TCPClient extends Thread{
         try {
             writeToServer(USERNAME+ " " +this.username);
             System.out.println("TCP Client has sent the username: "+ this.username);
-            
         } catch (IOException ex) {
             Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -213,13 +182,9 @@ public class TCPClient extends Thread{
         return this.message;
     }
 
-    public boolean isMessageReceived() {
-        return messageReceived;
-    }
+    //public boolean isMessageReceived() { return messageReceived; }
 
-    public void setMessageReceived(boolean messageReceived) {
-        this.messageReceived = messageReceived;
-    }
+    //public void setMessageReceived(boolean messageReceived) { this.messageReceived = messageReceived; }
     
     public void setReady(boolean ready) {
         this.ready = ready;

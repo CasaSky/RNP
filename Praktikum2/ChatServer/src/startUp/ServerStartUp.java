@@ -14,7 +14,7 @@ import chat.TCPServer;
 public class ServerStartUp {
     public static void main(String[] args) {
         /* Erzeuge Server und starte ihn */
-        TCPServer myServer = new TCPServer(56789, 2);
+        TCPServer myServer = new TCPServer(56789, 10);
         myServer.startServer();
    }
 }
